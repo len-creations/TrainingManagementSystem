@@ -1,0 +1,9 @@
+{% extends 'Training/layout.html' %}
+
+<title>Page Not Found</title>
+{% block body %}
+<h1>Oops! Page Not Found</h1>
+    <p>The page you are looking for may have been moved or doesn't exist.</p>
+    <img src="{% static 'Training/images/Cute Little Cat Wallpaper.jpg' %}" alt="Default Profile Picture">
+    <p><a href="{% url 'index' %}">Go to Home</a></p>
+{% endblock %}

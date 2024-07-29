@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+    background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/confectionary.png);
+}
+
+.h1 {
+    color: #333;
+}
+
+.header {
+    color: #333; 
+    background-color: rgba(71, 70, 70, 0.808);
+    margin-top: 0; 
+    padding: 5px;
+    display: flex;
+
+    align-items: center; /* Center items horizontally */
+}
+
+.profile-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-right: 0px; /* Add space below profile box */
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-info img {
+    width: 150px; 
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 10px; /* Space between image and text */
+}
+
+.profile-details {
+    text-align: left; /* Align text to the left */
+}
+
+.profile-details p {
+    margin: 0;
+    font-weight: bold; /* Make 'signed in as' text bold */
+}
+
+.navlink, .nav {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center; /* Center nav links horizontally */
+    list-style-type: none;
+    padding: 0;
+}
+
+.navlink li, .nav li {
+    margin-left: 10px;
+    border-radius: 15px;
+    background-color: #f0f0f0;
+}
+
+.navlink a, .nav a {
+    text-decoration: none;
+    color: #111211;
+    padding: 5px 10px;
+}
+
+.footer {
+    background-color: #f0f0f0; 
+    padding: 10px 0; 
+    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    justify-content: center; /* Center items horizontally */
+}
+
+.footer-content img {
+    max-width: 600px; /* Adjust max-width of the image */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 10px; /* Space between image and text */
+}
+
+.footer-content p {
+    margin: 0; 
+    font-size: 14px; 
+}
+
+input[readonly], textarea[readonly] {
+    background-color: #909192; 
+    pointer-events: none; 
+}
+.module-list {
+    list-style-type: none;
+    padding: 0;
+}
+.module-list li {
+    margin-bottom: 10px;
+}
+.module-list li a {
+    text-decoration: none;
+    color: #070707;
+}
+.module-actions {
+    margin-top: 20px;
+}
+.module-actions a {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 5px;
+}   
+.module-actions a:hover {
+    background-color: #27b300;
+}
+.category-list {
+    list-style-type: none;
+    padding: 0;
+}
+.category-list li {
+    margin-bottom: 10px;
+}
+.category-list li a {
+    text-decoration: none;
+    color: #0d0d0e;
+}
+.category-actions a {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 5px; 
+}
+.category-actions a:hover {
+    background-color: #27b300;
+}
