@@ -52,4 +52,4 @@ class TrainingModuleForm(forms.ModelForm):
                 raise forms.ValidationError("File type is not supported.")
             return file
 
-
+git push origin main
