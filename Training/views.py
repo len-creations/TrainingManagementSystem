@@ -6,11 +6,13 @@ from .models import User,Profile,TrainingModule,TraineeProgress
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages  
-from.forms import profileupdateform,UserProfileForm,TrainingModuleForm
+from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressForm
 from PyPDF2 import PdfReader
 import os
 from django.views.decorators.csrf import csrf_exempt
-
+from datetime import datetime
+from django.db.models import Count, Avg
+from django.views import View
 
 # Create your views here.
 def index(request):
@@ -193,6 +195,8 @@ def category_detail(request, category):
         'category': category,
         'training_modules': modules
     })
+
+    
 @csrf_exempt
 def update_module_status(request):
     if request.method == 'POST':
@@ -217,3 +221,88 @@ def update_module_status(request):
         trainee_progress.save()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+class TraineeProgressView(View):
+    def get(self, request):
+        trainee_id = request.GET.get('trainee_id')
+        training_module_id = request.GET.get('training_module_id')
+        instance = None
+        print(trainee_id)
+        print(training_module_id)
+
+        if trainee_id and training_module_id:
+            try:
+                instance = TraineeProgress.objects.get(
+                    trainee_id=trainee_id,
+                    training_module_id=training_module_id
+                )
+             
+            except TraineeProgress.DoesNotExist:
+                pass
+        
+        form = TraineeProgressForm(instance=instance)
+        return render(request, 'Training/trainee_progress form.html', {'form': form})
+
+    def post(self, request):
+        form = TraineeProgressForm(request.POST)
+        if form.is_valid():
+            trainee = form.cleaned_data['trainee']
+            training_module = form.cleaned_data['training_module']
+            progress = form.cleaned_data['progress']
+            completed_modules = form.cleaned_data['completed_modules']
+            completed_exams = form.cleaned_data['completed_exams']
+
+            if progress > 100:
+                return JsonResponse({'status': 'error', 'message': 'Progress cannot exceed 100%'})
+            
+            if progress == 100:
+                # Check if a record exists and get or create
+                progress_record, created = TraineeProgress.objects.get_or_create(
+                    trainee=trainee,
+                    training_module=training_module,
+                )
+                
+                if not created:
+                    # If record exists, ensure fields are updated correctly
+                    progress_record.completed_modules += completed_modules
+                    progress_record.completed_exams += completed_exams
+                
+                progress_record.progress = progress
+                progress_record.save()
+
+                if request.is_ajax():
+                    return JsonResponse({'status': 'success', 'message': 'Data updated successfully'})
+                return redirect('trainee_progress')  # Adjust redirection as needed
+            else:
+                if request.is_ajax():
+                    return JsonResponse({'status': 'error', 'message': 'Progress must be 100 to update modules and exams'})
+        
+        if request.is_ajax():
+            return JsonResponse({'status': 'error', 'message': 'Form is not valid'})
+        return render(request, 'Training/trainee_progress form.html', {'form': form})
+    
+# def trainee_summary(request, user_id):
+#     # Get the trainee based on user_id
+#     trainee = User.objects.get(pk=user_id)
+#     # Get the trainee's progress records
+#     progress_records = TraineeProgress.objects.filter(trainee=trainee)  
+#     # Count of all training modules for the trainee
+#     number_of_trainings = progress_records.count()
+    
+#     # Count of trainings for the current month
+#     current_month = datetime.now().month
+#     count_trainings_this_month = progress_records.filter(
+#         training_module__created_at__month=current_month
+#     ).count()
+    
+#     # Average marks scored
+#     average_marks = progress_records.aggregate(Avg('marks_scored'))['marks_scored__avg']
+    
+#     context = {
+#         'trainee': trainee,
+#         'number_of_trainings': number_of_trainings,
+#         'count_trainings_this_month': count_trainings_this_month,
+#         'average_marks': average_marks,
+#     }
+    
+#     return render(request, 'trainee_summary.html', context)

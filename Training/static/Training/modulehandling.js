@@ -1,48 +1,46 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Define the button and hidden inputs
-    const markCompleteBtn = document.getElementById('mark-complete-btn');
-    const moduleId = document.getElementById('module-id').value;
-    const traineeId = document.getElementById('trainee-id').value;
+$(document).ready(function() {
+    $('#submit-button').click(function(e) {
+        e.preventDefault();
+        
+        // Get values from form elements
+        let progressElement = $('#id_progress');
+        let traineeElement = $('#id_trainee');
+        let progress = parseInt(progressElement.val(), 10);
+        
+        if (isNaN(progress)) {
+            alert("Progress is not a valid number.");
+            return;
+        }
+        
+        // Validate progress value
+        if (progress < 100) {
+            alert("Progress must be 100 to update modules and exams.");
+            return;
+        }
 
-    console.log('module_id', moduleId);
-    console.log('trainee_id', traineeId);
-
-    // Function to update the module completion status
-    function updateModuleStatus(isCompleted) {
-        fetch(/update-module-status/,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': '{{ csrf_token }}'
+        let traineeId = traineeElement.val();
+        
+        if (!traineeId) {
+            alert("Please select a trainee.");
+            return;
+        }
+        
+        $.ajax({
+            url: "{% url 'trainee_progress' %}",
+            method: "POST",
+            data: $('#trainee-progress-form').serialize(),
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                    $('#trainee-progress-form')[0].reset();  // Clear the form
+                } else {
+                    alert(response.message);
+                }
             },
-            body: new URLSearchParams({
-                'module_id': moduleId,
-                'trainee_id': traineeId,
-                'completed': isCompleted,
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (isCompleted) {
-                markCompleteBtn.textContent = 'Mark Module as Incomplete';
-            } else {
-                markCompleteBtn.textContent = 'Mark Module as Completed';
+            error: function(xhr, status, error) {
+                alert("An error occurred: " + error);
             }
-        })
-        .catch(error => {
-            console.error('Error updating module status:', error);
         });
-    }
-
-    // Initialize button text based on the current state
-    const isCompleted = markCompleteBtn.dataset.completed === '1';
-    markCompleteBtn.textContent = isCompleted ? 'Mark Module as Incomplete' : 'Mark Module as Completed';
-
-    // Event handler for button click
-    markCompleteBtn.addEventListener('click', function() {
-        const currentStatus = markCompleteBtn.textContent.includes('Completed');
-        updateModuleStatus(!currentStatus);
-        // Update the button data attribute for future reference
-        markCompleteBtn.dataset.completed = !currentStatus ? '1' : '0';
     });
 });
+

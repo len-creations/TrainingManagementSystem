@@ -3,6 +3,7 @@ from django.conf.urls import handler404
 from Training import views
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import TraineeProgressView
 
 urlpatterns = [
     path("",views.index,name="index"),
@@ -20,6 +21,7 @@ urlpatterns = [
     path('categories/',views.category_list, name='category_list'),
     path('category/<str:category>/', views.category_detail, name='category_detail'),
     path('update-module-status/',views.update_module_status, name='update_module_status'),
+    path('trainee-progress/',TraineeProgressView.as_view(), name='trainee_progress'),
 
 ]
 #custom handler for 404 errors

@@ -1,5 +1,5 @@
 from django import forms
-from .models import User,Profile,TrainingModule
+from .models import User,Profile,TrainingModule,TraineeProgress
 from django.core.validators import FileExtensionValidator
 
 class profileupdateform(forms.ModelForm):
@@ -52,4 +52,18 @@ class TrainingModuleForm(forms.ModelForm):
                 raise forms.ValidationError("File type is not supported.")
             return file
 
+class TraineeProgressForm(forms.ModelForm):
+    trainee = forms.ModelChoiceField(queryset=User.objects.all())
+    training_module = forms.ModelChoiceField(queryset=TrainingModule.objects.all())
+    
+    class Meta:
+        model = TraineeProgress
+        fields = ['trainee', 'training_module', 'progress', 'completed_modules', 'completed_exams']
 
+    def __init__(self, *args, **kwargs):
+        # Allow for an instance to be passed to populate fields with existing data
+        instance = kwargs.get('instance')
+        super().__init__(*args, **kwargs)
+        if instance:
+            self.fields['completed_modules'].initial = instance.completed_modules
+            self.fields['completed_exams'].initial = instance.completed_exams   

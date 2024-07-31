@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from PyPDF2 import PdfReader
+from django.utils import timezone
 # # Create your models here.
 # class User(AbstractUser):
 #     pass  # Inherits fields and methods from AbstractUser
@@ -41,7 +42,7 @@ class TrainingModule(models.Model):
     category=models.CharField(max_length=10,default="equipment")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    file = models.FileField(upload_to='uploads/', blank=True, null=True)
+    file = models.FileField(upload_to='Training/uploads/', blank=True, null=True)
     total_pages = models.IntegerField(default=0)
     
     def __str__(self):
@@ -59,7 +60,7 @@ class TraineeProgress(models.Model):
     progress = models.PositiveIntegerField()
     completed_modules = models.PositiveIntegerField(default=0)  # Track completed modules
     completed_exams = models.PositiveIntegerField(default=0)    # Track completed exams
-    
+    date=models.DateTimeField(default=timezone.now)
     def update_progress(self, module_count, exam_count):
         self.completed_modules = module_count
         self.completed_exams = exam_count
@@ -67,3 +68,14 @@ class TraineeProgress(models.Model):
 
     def __str__(self):
         return f'{self.trainee} - {self.training_module}'
+class Trainingdocuments(models.Model):
+    trainee = models.OneToOneField(User, on_delete=models.CASCADE)
+    training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)
+    documentname=models.CharField(max_length=100)
+    document=models.FileField(upload_to='Training/ATTENDANCE SHEET', blank=True, null=True)
+    Documentdomain=models.CharField(max_length=20)
+    facility=models.CharField(max_length=10)
+    date=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self. documentname} - {self.date}'

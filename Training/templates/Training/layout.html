@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Training Management System{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'Training/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'Training/modulehandling.js' %}"></script> 
 </head>
 <body>
@@ -38,6 +39,8 @@
                     <li><a href="{% url 'update_profile' %}">Create Profile</a></li>
                     <li><a href="{% url 'training_module_create' %}">Create New Training Module</a></li>
                     <li><a href="{% url 'category_list' %}">Categories</a></li>
+                    <li><a href="{% url 'trainee_progress' %}">Update progress</a></li>
+
                 </ul>
             </nav>
         </div>
