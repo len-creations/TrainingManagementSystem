@@ -55,19 +55,37 @@ class TrainingModule(models.Model):
                 self.save()
 
 class TraineeProgress(models.Model):
-    trainee = models.OneToOneField(User, on_delete=models.CASCADE)
+    trainee = models.ForeignKey(User, on_delete=models.CASCADE)
     training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)
     progress = models.PositiveIntegerField()
-    completed_modules = models.PositiveIntegerField(default=0)  # Track completed modules
-    completed_exams = models.PositiveIntegerField(default=0)    # Track completed exams
-    date=models.DateTimeField(default=timezone.now)
+    completed_modules = models.PositiveIntegerField(default=0)
+    completed_exams = models.PositiveIntegerField(default=0)
+    date = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('trainee', 'training_module')
+
     def update_progress(self, module_count, exam_count):
         self.completed_modules = module_count
         self.completed_exams = exam_count
         self.save()
 
+    @staticmethod
+    def total_completed_modules(trainee):
+        return TraineeProgress.objects.filter(trainee=trainee).aggregate(
+            total_modules=models.Sum('completed_modules')
+        )['total_modules'] or 0
+
+    @staticmethod
+    def total_completed_exams(trainee):
+        return TraineeProgress.objects.filter(trainee=trainee).aggregate(
+            total_exams=models.Sum('completed_exams')
+        )['total_exams'] or 0
+
     def __str__(self):
         return f'{self.trainee} - {self.training_module}'
+    
+
 class Trainingdocuments(models.Model):
     trainee = models.OneToOneField(User, on_delete=models.CASCADE)
     training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)

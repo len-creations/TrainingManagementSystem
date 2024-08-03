@@ -30,14 +30,13 @@
     </div>
 
     <!-- Hidden inputs to store module ID and trainee ID -->
-    <input type="hidden" id="module-id" value="{{ training_module.id }}">
-    <input type="hidden" id="trainee-id" value="{{ user.id }}">
-
+    <input type="hidden" id="training_module_id" value="{{ training_module.id }}">
+    <input type="hidden" id="trainee_id" value="{{ user.id }}">
+    
     <!-- Button to mark module as completed -->
-    <button id="mark-complete-btn" data-completed="{{ trainee_progress.completed_modules }}">Mark Module as Completed</button>
-    <script>
-        const updateUrl = '{% url "update_module_status" %}';
-    </script>
+    <button id="submit-button" type="button">Mark Module Complete</button>
+    
+    <div id="message" style="display:none;"></div>
 </body>
 </html>
 {% endblock %}

@@ -25,6 +25,7 @@
                 <ul class="navlink">
                     <li><a href="{% url 'logout' %}">Log Out</a></li>
                     <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'trainee_progress_summary' user.pk %}">See Progress</a></li>
                 </ul>
             {% else %}
                 <ul class="nav">
@@ -39,7 +40,8 @@
                     <li><a href="{% url 'update_profile' %}">Create Profile</a></li>
                     <li><a href="{% url 'training_module_create' %}">Create New Training Module</a></li>
                     <li><a href="{% url 'category_list' %}">Categories</a></li>
-                    <li><a href="{% url 'trainee_progress' %}">Update progress</a></li>
+                
+               
 
                 </ul>
             </nav>

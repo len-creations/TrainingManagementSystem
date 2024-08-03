@@ -1,0 +1,19 @@
+{% extends 'Training/layout.html' %}
+{% block body %}
+<title>Trainee Progress Summary</title>
+<body>
+    <h1>Progress Summary for {{ trainee.username }}</h1>
+
+    <p><strong>Total Modules Completed:</strong> {{ total_modules }}</p>
+    <p><strong>Total Exams Completed:</strong> {{ total_exams }}</p>
+
+    <h2>Completed Modules</h2>
+    <ul>
+        {% for progress in completed_modules %}
+            <li>{{ progress.training_module.title }} -  {{ progress.completed_modules }}, Completed Exams: {{ progress.completed_exams }}</li>
+        {% empty %}
+            <li>No modules completed yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+{% endblock %}

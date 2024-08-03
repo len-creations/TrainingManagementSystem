@@ -13,6 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.db.models import Count, Avg
 from django.views import View
+import traceback
+from django.views.decorators.http import require_GET
 
 # Create your views here.
 def index(request):
@@ -199,88 +201,115 @@ def category_detail(request, category):
     
 @csrf_exempt
 def update_module_status(request):
-    if request.method == 'POST':
-        module_id = request.POST.get('module_id')
-        trainee_id = request.POST.get('trainee_id')
-        completed = request.POST.get('completed') == 'true'
-         
-        module = get_object_or_404(TrainingModule, id=module_id)
-        trainee = get_object_or_404(User, id=trainee_id)
+    if request.method == "POST":
+        try:
+            trainee_id = int(request.POST.get('trainee_id'))
+            training_module_id = int(request.POST.get('training_module_id'))
+            completed_modules = int(request.POST.get('completed_modules', 0))
+            completed_exams = int(request.POST.get('completed_exams', 0))
+            action = request.POST.get('action')  # 'complete' or 'uncomplete'
 
+            trainee = User.objects.get(id=trainee_id)
+            training_module = TrainingModule.objects.get(id=training_module_id)
 
-        trainee_progress, created = TraineeProgress.objects.get_or_create(
-            trainee=trainee,
-            training_module=module
-        )
-        print(module)
-        if completed:
-            trainee_progress.completed_modules += 1
-        else:
-            trainee_progress.completed_modules -= 1
+            # Get the progress record or create a new one
+            progress_record, created = TraineeProgress.objects.get_or_create(
+                trainee=trainee,
+                training_module=training_module,
+                defaults={'progress': 0}
+            )
 
-        trainee_progress.save()
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'}, status=400)
-
-class TraineeProgressView(View):
-    def get(self, request):
-        trainee_id = request.GET.get('trainee_id')
-        training_module_id = request.GET.get('training_module_id')
-        instance = None
-        print(trainee_id)
-        print(training_module_id)
-
-        if trainee_id and training_module_id:
-            try:
-                instance = TraineeProgress.objects.get(
-                    trainee_id=trainee_id,
-                    training_module_id=training_module_id
-                )
-             
-            except TraineeProgress.DoesNotExist:
-                pass
-        
-        form = TraineeProgressForm(instance=instance)
-        return render(request, 'Training/trainee_progress form.html', {'form': form})
-
-    def post(self, request):
-        form = TraineeProgressForm(request.POST)
-        if form.is_valid():
-            trainee = form.cleaned_data['trainee']
-            training_module = form.cleaned_data['training_module']
-            progress = form.cleaned_data['progress']
-            completed_modules = form.cleaned_data['completed_modules']
-            completed_exams = form.cleaned_data['completed_exams']
-
-            if progress > 100:
-                return JsonResponse({'status': 'error', 'message': 'Progress cannot exceed 100%'})
-            
-            if progress == 100:
-                # Check if a record exists and get or create
-                progress_record, created = TraineeProgress.objects.get_or_create(
-                    trainee=trainee,
-                    training_module=training_module,
-                )
-                
-                if not created:
-                    # If record exists, ensure fields are updated correctly
+            if action == 'complete':
+                if progress_record.progress == 0:  # Only increment if not already completed
                     progress_record.completed_modules += completed_modules
-                    progress_record.completed_exams += completed_exams
-                
-                progress_record.progress = progress
-                progress_record.save()
+                    # progress_record.completed_exams += completed_exams
+                    progress_record.progress = 100  # Mark as complete
+                    progress_record.save()
+                    return JsonResponse({'status': 'success', 'message': 'Module marked as complete.'})
+                else:
+                    return JsonResponse({'status': 'info', 'message': 'Module already marked as complete.'})
 
-                if request.is_ajax():
-                    return JsonResponse({'status': 'success', 'message': 'Data updated successfully'})
-                return redirect('trainee_progress')  # Adjust redirection as needed
-            else:
-                if request.is_ajax():
-                    return JsonResponse({'status': 'error', 'message': 'Progress must be 100 to update modules and exams'})
+            elif action == 'uncomplete':
+                if progress_record.progress == 100:  # Only decrement if already completed
+                    progress_record.completed_modules -= completed_modules
+                    # progress_record.completed_exams -= completed_exams
+                    progress_record.progress = 0  # Mark as incomplete
+                    progress_record.save()
+                    return JsonResponse({'status': 'success', 'message': 'Module marked as incomplete.'})
+                else:
+                    return JsonResponse({'status': 'info', 'message': 'Module already marked as incomplete.'})
+
+            return JsonResponse({'status': 'error', 'message': 'Invalid action.'})
+
+        except (User.DoesNotExist, TrainingModule.DoesNotExist) as e:
+            return JsonResponse({'status': 'error', 'message': f"Database error: {str(e)}"})
+        except Exception as e:
+            # Log the full traceback for debugging
+            return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}\n{traceback.format_exc()}'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+@require_GET
+def get_module_status(request):
+    try:
+        trainee_id = int(request.GET.get('trainee_id'))
+        training_module_id = int(request.GET.get('training_module_id'))
+
+        trainee = User.objects.get(id=trainee_id)
+        training_module = TrainingModule.objects.get(id=training_module_id)
+
+        progress_record = TraineeProgress.objects.filter(
+            trainee=trainee,
+            training_module=training_module
+        ).first()
+
+        if progress_record:
+            return JsonResponse({'status': 'success', 'progress': progress_record.progress})
+        else:
+            return JsonResponse({'status': 'success', 'progress': 0})
+
+    except (User.DoesNotExist, TrainingModule.DoesNotExist) as e:
+        return JsonResponse({'status': 'error', 'message': f"Database error: {str(e)}"})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}'})
+
+
+# def trainee_progress_summary(request, trainee_id):
+#     try:
         
-        if request.is_ajax():
-            return JsonResponse({'status': 'error', 'message': 'Form is not valid'})
-        return render(request, 'Training/trainee_progress form.html', {'form': form})
-    
+#         trainee = User.objects.get(id=trainee_id)
+#         total_modules = TraineeProgress.total_completed_modules(trainee)
+#         total_exams = TraineeProgress.total_completed_exams(trainee)
+        
+#         # all modules completed by the trainee
+#         completed_modules = TraineeProgress.objects.filter(trainee=trainee)
+
+#         context = {
+#             'trainee': trainee,
+#             'total_modules': total_modules,
+#             'total_exams': total_exams,
+#             'completed_modules': completed_modules,
+#         }
+#         return render(request, 'Training/trainee_progress_summary.html', context)
+
+#     except User.DoesNotExist:
+#         # Handle the case where the trainee does not exist
+#         return render(request, 'Training/404.html', {'message': 'Trainee not found'})
+def trainee_progress_summary(request, trainee_id):
+    trainee = get_object_or_404(User, id=trainee_id)
+    total_modules = TraineeProgress.total_completed_modules(trainee)
+    total_exams = TraineeProgress.total_completed_exams(trainee)
+    completed_modules = TraineeProgress.objects.filter(trainee=trainee)
+
+    context = {
+        'trainee': trainee,
+        'total_modules': total_modules,
+        'total_exams': total_exams,
+        'completed_modules': completed_modules,
+    }
+    return render(request, 'Training/trainee_progress_summary.html', context) 
+
+
+
 # def trainee_summary(request, user_id):
 #     # Get the trainee based on user_id
 #     trainee = User.objects.get(pk=user_id)
