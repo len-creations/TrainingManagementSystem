@@ -6,12 +6,12 @@ from .models import User,Profile,TrainingModule,TraineeProgress
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages  
-from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressForm
+from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressFilterForm,TraineeProgressForm
 from PyPDF2 import PdfReader
 import os
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
-from django.db.models import Count, Avg
+from django.db.models import Sum,Count, Avg
 from django.views import View
 import traceback
 from django.views.decorators.http import require_GET
@@ -275,7 +275,6 @@ def get_module_status(request):
 
 # def trainee_progress_summary(request, trainee_id):
 #     try:
-        
 #         trainee = User.objects.get(id=trainee_id)
 #         total_modules = TraineeProgress.total_completed_modules(trainee)
 #         total_exams = TraineeProgress.total_completed_exams(trainee)
@@ -292,46 +291,51 @@ def get_module_status(request):
 #         return render(request, 'Training/trainee_progress_summary.html', context)
 
 #     except User.DoesNotExist:
-#         # Handle the case where the trainee does not exist
 #         return render(request, 'Training/404.html', {'message': 'Trainee not found'})
-def trainee_progress_summary(request, trainee_id):
-    trainee = get_object_or_404(User, id=trainee_id)
-    total_modules = TraineeProgress.total_completed_modules(trainee)
-    total_exams = TraineeProgress.total_completed_exams(trainee)
-    completed_modules = TraineeProgress.objects.filter(trainee=trainee)
-
-    context = {
-        'trainee': trainee,
-        'total_modules': total_modules,
-        'total_exams': total_exams,
-        'completed_modules': completed_modules,
-    }
-    return render(request, 'Training/trainee_progress_summary.html', context) 
-
-
-
-# def trainee_summary(request, user_id):
-#     # Get the trainee based on user_id
-#     trainee = User.objects.get(pk=user_id)
-#     # Get the trainee's progress records
-#     progress_records = TraineeProgress.objects.filter(trainee=trainee)  
-#     # Count of all training modules for the trainee
-#     number_of_trainings = progress_records.count()
     
-#     # Count of trainings for the current month
-#     current_month = datetime.now().month
-#     count_trainings_this_month = progress_records.filter(
-#         training_module__created_at__month=current_month
-#     ).count()
-    
-#     # Average marks scored
-#     average_marks = progress_records.aggregate(Avg('marks_scored'))['marks_scored__avg']
-    
+# def trainee_progress_summary(request, trainee_id):
+#     trainee = get_object_or_404(User, id=trainee_id)
+#     total_modules = TraineeProgress.total_completed_modules(trainee)
+#     total_exams = TraineeProgress.total_completed_exams(trainee)
+#     completed_modules = TraineeProgress.objects.filter(trainee=trainee)
+
 #     context = {
 #         'trainee': trainee,
-#         'number_of_trainings': number_of_trainings,
-#         'count_trainings_this_month': count_trainings_this_month,
-#         'average_marks': average_marks,
+#         'total_modules': total_modules,
+#         'total_exams': total_exams,
+#         'completed_modules': completed_modules,
 #     }
-    
-#     return render(request, 'trainee_summary.html', context)
+#     return render(request, 'Training/trainee_progress_summary.html', context) 
+
+
+
+def trainee_progress_summary(request):
+    form = TraineeProgressFilterForm(request.GET or None)
+    completed_modules = TraineeProgress.objects.all()
+
+    if form.is_valid():
+        trainee = form.cleaned_data.get('trainee')
+        training_module = form.cleaned_data.get('training_module')
+        start_date = form.cleaned_data.get('start_date')
+        end_date = form.cleaned_data.get('end_date')
+
+        if trainee:
+            completed_modules = completed_modules.filter(trainee=trainee)
+        if training_module:
+            completed_modules = completed_modules.filter(training_module=training_module)
+        if start_date and end_date:
+            completed_modules = completed_modules.filter(date__range=[start_date, end_date])
+
+        total_modules = completed_modules.aggregate(total_modules=Sum('completed_modules'))['total_modules'] or 0
+        total_exams = completed_modules.aggregate(total_exams=Sum('completed_exams'))['total_exams'] or 0
+
+        context = {
+            'form': form,
+            'completed_modules': completed_modules,
+            'total_modules': total_modules,
+            'total_exams': total_exams,
+        }
+        return render(request, 'Training/trainee_progress_summary.html', context)
+
+    # If the form is not valid, return the form with empty data
+    return render(request, 'Training/trainee_progress_summary.html', {'form': form})

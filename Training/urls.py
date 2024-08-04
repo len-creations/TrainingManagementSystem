@@ -22,7 +22,7 @@ urlpatterns = [
     path('category/<str:category>/', views.category_detail, name='category_detail'),
     path('update-module-status/',views.update_module_status, name='update_module_status'),
     path('get-module-status/',views.get_module_status, name='get_module_status'),
-    path('trainee_progress_summary/<int:trainee_id>/', views.trainee_progress_summary, name='trainee_progress_summary'),
+    path('trainee_progress_summary/', views.trainee_progress_summary, name='trainee_progress_summary'),
     # path('trainee-progress/',TraineeProgressView.as_view(), name='trainee_progress'),
 
 ]

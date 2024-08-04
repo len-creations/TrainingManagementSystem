@@ -67,3 +67,9 @@ class TraineeProgressForm(forms.ModelForm):
         if instance:
             self.fields['completed_modules'].initial = instance.completed_modules
             self.fields['completed_exams'].initial = instance.completed_exams   
+            
+class TraineeProgressFilterForm(forms.Form):
+    trainee = forms.ModelChoiceField(queryset=User.objects.all(), required=False, label="Trainee")
+    training_module = forms.ModelChoiceField(queryset=TrainingModule.objects.all(), required=False, label="Training Module")
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))

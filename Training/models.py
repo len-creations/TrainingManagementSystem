@@ -82,8 +82,12 @@ class TraineeProgress(models.Model):
             total_exams=models.Sum('completed_exams')
         )['total_exams'] or 0
 
+    @property
+    def trainee_name(self):
+        return self.trainee.profile.name if hasattr(self.trainee, 'profile') else "No Name"
+
     def __str__(self):
-        return f'{self.trainee} - {self.training_module}'
+        return f'{self.trainee.profile.name} - {self.training_module}'
     
 
 class Trainingdocuments(models.Model):
@@ -94,6 +98,7 @@ class Trainingdocuments(models.Model):
     Documentdomain=models.CharField(max_length=20)
     facility=models.CharField(max_length=10)
     date=models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return f'{self. documentname} - {self.date}'

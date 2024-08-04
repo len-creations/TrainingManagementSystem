@@ -7,13 +7,40 @@
     <p><strong>Total Modules Completed:</strong> {{ total_modules }}</p>
     <p><strong>Total Exams Completed:</strong> {{ total_exams }}</p>
 
-    <h2>Completed Modules</h2>
-    <ul>
-        {% for progress in completed_modules %}
-            <li>{{ progress.training_module.title }} -  {{ progress.completed_modules }}, Completed Exams: {{ progress.completed_exams }}</li>
-        {% empty %}
-            <li>No modules completed yet.</li>
-        {% endfor %}
-    </ul>
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Filter</button>
+    </form>
+
+    {% if completed_modules %}
+        <h2>Results</h2>
+        <p>Total Modules Completed: {{ total_modules }}</p>
+        <p>Total Exams Completed: {{ total_exams }}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Trainee</th>
+                    <th>Training Module</th>
+                    <th>Date</th>
+                    <th>Completed Modules</th>
+                    <th>Completed Exams</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for progress in completed_modules %}
+                <tr>
+                    <td>{% if progress.trainee_name == "No Name" %}{{ progress.trainee.username }}{% else %}{{ progress.trainee_name }} {% endif %}</td>
+                    <td>{{ progress.training_module }}</td>
+                    <td>{{ progress.date }}</td>
+                    <td>{{ progress.completed_modules }}</td>
+                    <td>{{ progress.completed_exams }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No results found for the selected criteria.</p>
+    {% endif %}
 </body>
 {% endblock %}
