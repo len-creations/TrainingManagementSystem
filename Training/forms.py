@@ -1,6 +1,7 @@
 from django import forms
 from .models import User,Profile,TrainingModule,TraineeProgress
 from django.core.validators import FileExtensionValidator
+from .models import TrainingDocuments
 
 class profileupdateform(forms.ModelForm):
     class Meta:
@@ -73,3 +74,29 @@ class TraineeProgressFilterForm(forms.Form):
     training_module = forms.ModelChoiceField(queryset=TrainingModule.objects.all(), required=False, label="Training Module")
     start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+
+class TrainingDocumentsForm(forms.ModelForm):
+    trainee_names = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': 'Enter trainee names, one per line'}),
+        help_text='Enter trainee names, each on a new line.',
+        required=True
+    )
+    training_module_name = forms.CharField(
+        max_length=100,
+        help_text='Enter the name of the training module.',
+        required=True
+    )
+
+    class Meta:
+        model = TrainingDocuments
+        fields = ['documentname', 'document', 'document_domain', 'facility','Trainingdate']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        trainees = cleaned_data.get('trainee_names')  # Updated field name to match form
+        training_module_name = cleaned_data.get('training_module_name')
+
+        if not trainees or not training_module_name:
+            raise forms.ValidationError('Both trainees and training module are required.')
+
+        return cleaned_data

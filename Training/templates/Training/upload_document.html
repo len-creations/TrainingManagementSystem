@@ -1,0 +1,13 @@
+{% extends 'Training/layout.html' %}
+{% load static %}
+{% block body %}
+<title>Upload Document</title>
+<body>
+    <h1>Upload Document</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+</body>
+{% endblock %}

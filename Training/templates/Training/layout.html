@@ -26,11 +26,15 @@
                     <li><a href="{% url 'logout' %}">Log Out</a></li>
                     <li><a href="{% url 'index' %}">Home</a></li>
                     <li><a href="{% url 'trainee_progress_summary' %}">See Progress</a></li>
+                    <li><a href="{% url 'upload_document' %}">upload document</a></li>
+                    <li><a href="{% url 'document_list' %}">See documents</a></li>
+                    <li><a href="{% url 'send_email' %}">Send email</a></li>
                 </ul>
             {% else %}
                 <ul class="nav">
                     <li><a href="{% url 'login' %}?next={{ request.path }}">Log In</a></li>
                     <li><a href="{% url 'register' %}">Register</a></li>
+                    <li><a href="{% url 'password_reset' %}">forgot password reset here</a></li>
                 </ul>
             {% endif %}
             <nav class="navlink">

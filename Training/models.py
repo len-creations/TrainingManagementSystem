@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from PyPDF2 import PdfReader
 from django.utils import timezone
+import json
 # # Create your models here.
 # class User(AbstractUser):
 #     pass  # Inherits fields and methods from AbstractUser
@@ -90,15 +91,53 @@ class TraineeProgress(models.Model):
         return f'{self.trainee.profile.name} - {self.training_module}'
     
 
-class Trainingdocuments(models.Model):
-    trainee = models.OneToOneField(User, on_delete=models.CASCADE)
-    training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)
-    documentname=models.CharField(max_length=100)
-    document=models.FileField(upload_to='Training/ATTENDANCE SHEET', blank=True, null=True)
-    Documentdomain=models.CharField(max_length=20)
-    facility=models.CharField(max_length=10)
-    date=models.DateTimeField(auto_now_add=True)
-    
+class TrainingDocuments(models.Model):
+    trainee_names = models.TextField(blank=True, null=True)  # JSON string to store list of trainee names
+    training_module_name = models.CharField(max_length=100, blank=True, null=True)  # Store training module name
+    documentname = models.CharField(max_length=100)
+    document = models.FileField(upload_to='Training/ATTENDANCE_SHEET/', blank=True, null=True)
+    document_domain = models.CharField(max_length=20)
+    facility = models.CharField(max_length=10)
+    Trainingdate=models.CharField(max_length=50,default='date 000')
+    date = models.DateTimeField(auto_now_add=True)
+    unique_number = models.CharField(max_length=50, blank=True, null=True)  # For storing unique number
+
+    def set_trainee_names(self, names):
+        self.trainee_names = json.dumps(names)
+
+    def get_trainee_names(self):
+        return json.loads(self.trainee_names) if self.trainee_names else []
+
+    def save(self, *args, **kwargs):
+        # Ensure the date is set
+        if not self.pk and self.date is None:
+            self.date = timezone.now()  # Ensure you import timezone if using timezone.now()
+
+        # Generate unique_number only if it is not set
+        if not self.unique_number:
+            date_str = self.date.strftime('%Y%m%d') if self.date else '00000000'
+            module_abbr = self.training_module_name[:3].upper() if self.training_module_name else 'XXX'
+            
+            # Find the latest unique number with the same date and module abbreviation
+            last_document = TrainingDocuments.objects.filter(
+                date__date=self.date.date(),
+                training_module_name=self.training_module_name
+            ).order_by('-unique_number').first()
+            
+            if last_document and last_document.unique_number:
+                # Extract the last sequential number
+                last_number = int(last_document.unique_number.split('-')[-1])
+                next_number = last_number + 1
+            else:
+                next_number = 1
+
+            # Format the next sequential number with leading zeros
+            sequential_str = f"{next_number:04d}"
+
+            # Set the unique number
+            self.unique_number = f"{date_str}-{module_abbr}-{sequential_str}"
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self. documentname} - {self.date}'
+        return f'{self.documentname} - {self.date}'

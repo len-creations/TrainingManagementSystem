@@ -1,0 +1,43 @@
+{% extends 'Training/layout.html' %}
+{% load static %}
+{% block body %}
+<body>
+    <h1>Document List</h1>
+    <div class="search-form">
+        <form method="get">
+            <input type="text" name="query" value="{{ request.GET.query }}" placeholder="Search Document Name,Training Module"/>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Unique Number</th>
+                <th>Document Name</th>
+                <th>Training Module</th>
+                <th>Document Domain</th>
+                <th>Facility</th>
+                <th>Date</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+                <tr>
+                    <td>{{ document.unique_number }}</td>
+                    <td>{{ document.documentname }}</td>
+                    <td>{{ document.training_module_name }}</td>
+                    <td>{{ document.document_domain }}</td>
+                    <td>{{ document.facility }}</td>
+                    <td>{{ document.date }}</td>
+                    <td><a href="{{ document.document.url }}" download>Download</a></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No documents found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}

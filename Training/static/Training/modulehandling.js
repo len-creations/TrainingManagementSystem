@@ -67,3 +67,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var path = window.location.pathname;
+    var contentDiv = document.getElementById('password-reset-content');
+    
+    // Hide all content initially
+    contentDiv.querySelectorAll('h2, p, form').forEach(function(el) {
+      el.style.display = 'none';
+    });
+
+    // Show content based on the URL path
+    if (path.includes('password_reset')) {
+      contentDiv.querySelector('form').style.display = 'block';
+    } else if (path.includes('password_reset/done')) {
+      contentDiv.querySelector('p').style.display = 'block';
+    } else if (path.includes('password_reset/complete')) {
+      contentDiv.querySelector('p').style.display = 'block';
+    } else if (path.includes('password_reset')) {
+      contentDiv.querySelector('form').style.display = 'block';
+    } else {
+      contentDiv.querySelector('h2').textContent = 'Page not found';
+      contentDiv.querySelector('p').textContent = 'The page you are looking for does not exist.';
+      contentDiv.querySelector('h2').style.display = 'block';
+      contentDiv.querySelector('p').style.display = 'block';
+    }
+  });

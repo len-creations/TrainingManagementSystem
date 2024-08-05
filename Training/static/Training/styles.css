@@ -145,3 +145,31 @@ input[readonly], textarea[readonly] {
 .category-actions a:hover {
     background-color: #27b300;
 }
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+td {
+    color: #6c6d6f; /* Text color */
+    display: table-cell;
+    font-variant-numeric: tabular-nums;
+    padding: 4px 4px 3px; /* Custom padding */
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
