@@ -29,6 +29,17 @@
                     <li><a href="{% url 'upload_document' %}">upload document</a></li>
                     <li><a href="{% url 'document_list' %}">See documents</a></li>
                     <li><a href="{% url 'send_email' %}">Send email</a></li>
+                    <nav class="navlink">
+                        <ul class="nav">
+                            <li><a href="{% url 'training_module_list' %}">Training Modules</a></li>
+                            <li><a href="{% url 'profile_Pic' %}">Add Profile Pic</a></li>
+                            <li><a href="{% url 'update_profile' %}">Create Profile</a></li>
+                            <li><a href="{% url 'training_module_create' %}">Create New Training Module</a></li>
+                            <li><a href="{% url 'category_list' %}">Categories</a></li>
+                        
+                    
+                        </ul>
+                    </nav>
                 </ul>
             {% else %}
                 <ul class="nav">
@@ -37,18 +48,7 @@
                     <li><a href="{% url 'password_reset' %}">forgot password reset here</a></li>
                 </ul>
             {% endif %}
-            <nav class="navlink">
-                <ul class="nav">
-                    <li><a href="{% url 'training_module_list' %}">Training Modules</a></li>
-                    <li><a href="{% url 'profile_Pic' %}">Add Profile Pic</a></li>
-                    <li><a href="{% url 'update_profile' %}">Create Profile</a></li>
-                    <li><a href="{% url 'training_module_create' %}">Create New Training Module</a></li>
-                    <li><a href="{% url 'category_list' %}">Categories</a></li>
-                
-               
-
-                </ul>
-            </nav>
+           
         </div>
     </header>
 

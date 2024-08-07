@@ -18,7 +18,10 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET
 from django.core.mail import send_mail
 from django.conf import settings
-from Training.tokens import CustomPasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 
 # Create your views here.
 def index(request):
@@ -393,12 +396,34 @@ def send_test_email(request):
         return HttpResponse('Email sent successfully!')
     except ValueError as e:
         return HttpResponse(f'Error: {e}')
-    
-
 def test_token_view(request):
-    token_generator = CustomPasswordResetTokenGenerator()
-    user = User.objects.get(username='testuser')
-    token = token_generator.make_token(user)
-    is_valid = token_generator.check_token(user, token)
+    try:
+        # Assume you pass the email via query parameter
+        email = request.GET.get('email')
+        if not email:
+            return HttpResponse("No email provided.", status=400)
+        
+        user = User.objects.get(email=email)
+        token = default_token_generator.make_token(user)
+        
+        # Send a test email
+        subject = "Password Reset Test"
+        email_template_name = "registration/password_reset_email.html"
+        context = {
+            'email': email,
+            'domain': request.get_host(),
+            'site_name': 'training managment system',
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': token,
+            'protocol': 'https' if request.is_secure() else 'http',
+        }
+        email_body = render_to_string(email_template_name, context)
+        send_mail(subject, email_body, 'your-email@example.com', [email], fail_silently=False)
 
-    return HttpResponse(f"Generated token: {token}<br>Is token valid? {is_valid}")
+        response = f"Sent test email to: {email}<br>Generated token: {token}"
+    except User.DoesNotExist:
+        response = "User with this email does not exist."
+    except Exception as e:
+        response = f"An error occurred: {e}"
+    
+    return HttpResponse(response)

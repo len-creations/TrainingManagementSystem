@@ -124,7 +124,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 #configuring emails
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email provider's SMTP server
 EMAIL_PORT = 587  # Use 465 for SSL or 587 for TLS
 EMAIL_USE_TLS = True  # Set to True for TLS, False for SSL
