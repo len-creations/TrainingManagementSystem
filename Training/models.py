@@ -141,3 +141,4 @@ class TrainingDocuments(models.Model):
 
     def __str__(self):
         return f'{self.documentname} - {self.date}'
+ 

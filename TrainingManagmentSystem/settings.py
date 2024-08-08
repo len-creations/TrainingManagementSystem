@@ -123,9 +123,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+SITE_DOMAIN = 'special-space-robot-6977vq6wjg7h4ppp.github.dev'
+SITE_PROTOCOL = 'https'
 #configuring emails
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email provider's SMTP server
 EMAIL_PORT = 587  # Use 465 for SSL or 587 for TLS
 EMAIL_USE_TLS = True  # Set to True for TLS, False for SSL
@@ -133,7 +135,9 @@ EMAIL_HOST_USER = 'lensonkiarie@gmail.com'
 EMAIL_HOST_PASSWORD = 'kgnp zfsy vcks rslb'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
+# PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
+
+ALLOWED_HOSTS = ['special-space-robot-6977vq6wjg7h4ppp-8000.app.github.dev/', 'localhost', '127.0.0.1']
 # AUTH_USER_MODEL = 'Training.User'
 
 # Default primary key field type

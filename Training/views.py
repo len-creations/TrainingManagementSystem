@@ -16,12 +16,16 @@ from django.views import View
 import traceback    
 from django.utils import timezone
 from django.views.decorators.http import require_GET
-from django.core.mail import send_mail
+from django.core.mail import send_mail  
 from django.conf import settings
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
+from io import BytesIO
 
 # Create your views here.
 def index(request):
@@ -382,8 +386,8 @@ def document_list(request):
 
 ##################
 def send_test_email(request):
-    subject = 'Test Email'
-    message = 'This is the third test email sent from app.'  # Replace with the recipient's email
+    subject = 'lodige training'
+    message = 'hi phillipe '  # Replace with the recipient's email
     
     recipient_list = User.objects.values_list('email', flat=True).distinct()
 
@@ -427,3 +431,31 @@ def test_token_view(request):
         response = f"An error occurred: {e}"
     
     return HttpResponse(response)
+
+# def attendance(request):
+    
+#         html_string = render(request, 'Training/training_attendance_sheet.html')
+#         pdf_file = HTML(string=html_string).write_pdf()
+#         response = HttpResponse(pdf_file, content_type='application/pdf')
+#         response['Content-Disposition'] = 'inline; filename="attendance_sheet.pdf"'
+#         return response
+
+def attendance(request):
+    # Render the HTML template to a string
+    html_string = render_to_string('Training/training_attendance_sheet.html', {'context_variable': 'value'})
+    
+    # Create a BytesIO buffer to hold the PDF data
+    buffer = BytesIO()
+    
+    # Convert HTML to PDF and write it to the buffer
+    pdf_status = pisa.CreatePDF(BytesIO(html_string.encode('UTF-8')), dest=buffer)
+    
+    # Get the PDF data from the buffer
+    pdf_file = buffer.getvalue()
+    buffer.close()
+    
+    # Create an HTTP response with the PDF data
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="attendance_sheet.pdf"'
+    
+    return response

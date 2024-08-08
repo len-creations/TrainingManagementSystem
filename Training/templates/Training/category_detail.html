@@ -1,17 +1,15 @@
 {% extends "Training/layout.html" %}
 
 {% block body %}
-    <h1>Category: {{ category }}</h1>
-    <ul>
-        {% for module in training_modules %}
-            <div class="category-list">
-            <li>
-                <a href="{% url 'training_module_detail' module.pk %}">{{ module.title }}</a>
-                <p>{{ module.description }}</p>
-            </li>
-        </div>
-        {% empty %}
-            <p>No modules available in this category.</p>
-        {% endfor %}
-    </ul>
+<h1>Category: {{ category }}</h1>
+<ul class="category-list">
+    {% for module in training_modules %}
+        <li>
+            <a href="{% url 'training_module_detail' module.pk %}">{{ module.title }}</a>
+            <p>{{ module.description }}</p>
+        </li>
+    {% empty %}
+        <p>No modules available in this category.</p>
+    {% endfor %}
+</ul>
 {% endblock %}

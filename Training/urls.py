@@ -26,13 +26,13 @@ urlpatterns = [
     path('trainee_progress_summary/', views.trainee_progress_summary, name='trainee_progress_summary'),
     path('upload/',views.upload_document,name='upload_document'),
     path('documents/',views.document_list,name='document_list'),
-    # path('trainee-progress/',TraineeProgressView.as_view(), name='trainee_progress'),
+    path('attendance',views.attendance, name='attendance'),
 
     path('send-email/', views.send_test_email, name='send_email'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
-     path('password_reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
-    path('password_reset/complete/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
 
 ]   

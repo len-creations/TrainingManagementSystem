@@ -14,7 +14,7 @@
         <a href="{% url 'show_all' %}">Delete Training Module</a>
       </div>
      {% endif %}
-    <ul class="module-list">
+     <ul class="module-list">
         {% for module in training_modules %}
             <li>
                 <a href="{% url 'training_module_detail' module.pk %}">{{ module.title }}</a>

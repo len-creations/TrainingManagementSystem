@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .small-text {
+            font-size: 12px;
+        }
+
+        .table-header, .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .table-header td, .info-table td {
+            padding: 8px;
+            border: 1px solid black;
+            vertical-align: middle;
+        }
+
+        .table-header td {
+            height: 30px; /* Adjust height as needed */
+        }
+
+        .info-table td {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .full-width {
+            text-align: center;
+            font-weight: normal;
+            padding: 12px;
+        }
+
+        .spacer {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .thick-border {
+            border: 2px solid black;
+        }
+
+        .signature-row {
+            height: 40px;
+        }
+
+        /* Adjust widths for specific columns */
+        td:nth-child(1), th:nth-child(1) {
+            width: 50px;
+        }
+        td:nth-child(2), th:nth-child(2) {
+            width: 600px;
+        }
+        td:nth-child(3), th:nth-child(3) {
+            width: 120px;
+        }
+        td:nth-child(4), th:nth-child(4) {
+            width: 150px;
+        }
+        td:nth-child(5), th:nth-child(5) {
+            width: 100px;
+        }
+    </style>
+</head>
+{% load custom_filters %}
+<body>
+    <div class="container">
+        <div class="header-title">
+            <h2>Maintenance Training Attendance Sheet</h2>
+        </div>
+
+        <!-- Table Header Section -->
+        <table class="table-header">
+            <tr>
+                <td><strong>Date/Time:</strong> ______________</td>
+                <td><strong>Location:</strong> ______________</td>
+                <td><strong>Team:</strong> ______________</td>
+            </tr>
+            <tr>
+                <td><strong>Conducted By:</strong> ______________</td>
+                <td><strong>Designation:</strong> ______________</td>
+                <td><strong>Signature:</strong> ______________</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="full-width">I have listened and understood the contents of this training. I will follow and comply with regulations, safety, and procedures elaborated on this training.</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="full-width"><strong>Topic:</strong> FMC DECK / LSME-CRG-M-005 / REVISION: 00</td>
+            </tr>
+        </table>
+
+        <!-- Attendees Table -->
+        <table>
+            <thead>
+                <tr class="thick-border">
+                    <th>No.</th>
+                    <th>Attendees</th>
+                    <th>Staff ID no.</th>
+                    <th>Designation</th>
+                    <th>Signature</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example rows, replace with dynamic content -->
+                <tr class="signature-row">
+                    <td>1</td>
+                    <td>John Doe</td>
+                    <td>12345</td>
+                    <td>Engineer</td>
+                    <td class="signature"></td>
+                </tr>
+                <!-- Repeat rows as needed -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
