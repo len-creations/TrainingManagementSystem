@@ -27,6 +27,9 @@ urlpatterns = [
     path('upload/',views.upload_document,name='upload_document'),
     path('documents/',views.document_list,name='document_list'),
     path('attendance',views.attendance, name='attendance'),
+    path('generate-report/', views.generate_report, name='generate_report'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+     path('update_planned_trainings/', views.update_planned_trainings, name='update_planned_trainings'),
 
     path('send-email/', views.send_test_email, name='send_email'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),

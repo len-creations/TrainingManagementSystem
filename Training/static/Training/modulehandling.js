@@ -93,3 +93,26 @@ document.addEventListener('DOMContentLoaded', function() {
       contentDiv.querySelector('p').style.display = 'block';
     }
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdownButton = document.querySelector('.dropbtn');
+    const dropdownContent = document.querySelector('.dropdown-content');
+
+    dropdownButton.addEventListener('click', function() {
+        // Toggle visibility of dropdown content
+        if (dropdownContent.style.display === 'block') {
+            dropdownContent.style.display = 'none';
+        } else {
+            dropdownContent.style.display = 'block';
+        }
+    });
+
+    // Hide the dropdown when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            if (dropdownContent.style.display === 'block') {
+                dropdownContent.style.display = 'none';
+            }
+        }
+    });
+});
+

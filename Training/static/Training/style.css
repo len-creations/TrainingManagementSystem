@@ -1,0 +1,61 @@
+.dashboard-container {
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+.team-data-table,
+.previous-months-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.team-data-table th,
+.previous-months-table th {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: left;
+}
+
+.team-data-table td,
+.previous-months-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.bar-graph {
+    margin-top: 20px;
+}
+
+.facilities-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.facilities-list li {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 10px;
+    }
+
+    .team-data-table,
+    .previous-months-table {
+        font-size: 0.875rem;
+    }
+}

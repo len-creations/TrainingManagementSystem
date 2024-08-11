@@ -1,0 +1,88 @@
+{% extends "Training/layout.html" %}
+{% block body %}
+    <div class="dashboard-container">
+        <h1>Dashboard</h1>
+        
+        <!-- Top right section -->
+        <section class="top-right">
+            <h2>Team</h2>
+            <table class="team-data-table">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Planned</th>
+                        <th>Actual</th>
+                        <th>Exams</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in team_data %}
+                    <tr>
+                        <td>{{ team.team }}</td>
+                        <td>{{ team.planned_trainings }}</td>
+                        <td>{{ team.completed_trainings }}</td>
+                        <td>{{ team.exams_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Yearly to Date -->
+        <section class="yearly-to-date">
+            <h2>Yearly To Date</h2>
+            <p>Planned Trainings: {{ planned_trainings }}</p>
+            <p>Completed Trainings: {{ completed_trainings }}</p>
+        </section>
+
+        <!-- Facilities section -->
+        <section class="facilities">
+            <h2>Facility</h2>
+            <ul class="facilities-list">
+                {% for facility in facilities %}
+                <li>{{ facility.facility }} - Planned Trainings: {{ facility.planned_trainings }}, Completed Trainings: {{ facility.completed_trainings }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Bar Graph (Top Left) -->
+        <section class="bar-graph">
+            <h2>Trainings per Team</h2>
+            <canvas id="trainingsPerTeam"></canvas>
+        </section>
+
+        <!-- Previous Months Data -->
+        <section class="previous-months">
+            <h2>Previous Months</h2>
+            <table class="previous-months-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Planned Trainings</th>
+                        <th>Actual Trainings</th>
+                        <th>Exams Done</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for month in previous_months %}
+                    <tr>
+                        <td>{{ month.date__month }}</td>
+                        <td>{{ month.planned_trainings }}</td>
+                        <td>{{ month.actual_trainings }}</td>
+                        <td>{{ month.exams_done }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+<script type="application/json" id="trainingsData">
+    {
+        "labels": [{% for team in trainings_per_team %}"{{ team.team }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+        "data": [{% for team in trainings_per_team %}{{ team.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        "colors": [{% for team in trainings_per_team %}"{{ team.team|slice:":3" }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+    }
+</script>
+   
+{% endblock %}

@@ -26,6 +26,7 @@ from weasyprint import HTML
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from io import BytesIO
+import openpyxl
 
 # Create your views here.
 def index(request):
@@ -459,3 +460,100 @@ def attendance(request):
     response['Content-Disposition'] = 'inline; filename="attendance_sheet.pdf"'
     
     return response
+
+def generate_report(request):
+    # Create a workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = 'Report'
+
+    # Define column headers
+    headers = [
+        'STAFF NO.', 'EMPLOYEE NAME', 'Team', 'Facility', 'Designation', 'Trainings Taken', 'Date', 'Exams', 'Date'
+    ]
+    sheet.append(headers)
+
+    # Get all profiles and their training progress
+    profiles = Profile.objects.all()
+    for profile in profiles:
+        trainee_progress = TraineeProgress.objects.filter(trainee=profile.user)
+        total_trainings = trainee_progress.count()
+        # total_exams = trainee_progress.aggregate(total_exams=models.Sum('completed_exams'))['total_exams'] or 0
+        for progress in trainee_progress:
+            sheet.append([
+                profile.staffnumber,
+                profile.name,
+                profile.team,
+                profile.facility,
+                profile.designation,
+                total_trainings,
+                progress.date.strftime('%Y-%m-%d'),
+                # total_exams,
+                progress.date.strftime('%Y-%m-%d')
+            ])
+
+    # Create the response object
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="training_report.xlsx"'
+    workbook.save(response)
+    return response
+
+def dashboard(request):
+    now = timezone.now()
+    current_year = now.year
+
+    # Data for top-right
+    team_data = Profile.objects.annotate(
+        trainees_count=Count('user'),
+        trainings_count=Count('user__traineeprogress__training_module'),
+        exams_count=Count('user__traineeprogress__completed_exams')
+    ).values('team', 'trainees_count', 'trainings_count', 'exams_count')
+
+    # Data for yearly report
+    planned_trainings = TrainingModule.objects.filter(created_at__year=current_year).count()
+    completed_trainings = TraineeProgress.objects.filter(date__year=current_year).count()
+
+    # Data for facilities
+    facilities = Profile.objects.annotate(
+        planned_trainings=Count('user__traineeprogress__training_module'),
+        completed_trainings=Count('user__traineeprogress')
+    ).values('facility', 'planned_trainings', 'completed_trainings')
+
+    # Data for bar graph (top-left)
+    trainings_per_team = Profile.objects.annotate(
+        count=Count('user__traineeprogress__training_module')
+    ).values('team', 'count')
+
+    # Data for previous months
+    previous_months = TraineeProgress.objects.filter(date__lt=timezone.now()).values(
+        'date__month'
+    ).annotate(
+        planned_trainings=Count('training_module'),
+        actual_trainings=Count('training_module'),
+        exams_done=Count('completed_exams')
+    )
+
+    context = {
+        'team_data': team_data,
+        'planned_trainings': planned_trainings,
+        'completed_trainings': completed_trainings,
+        'facilities': facilities,
+        'trainings_per_team': trainings_per_team,
+        'previous_months': previous_months
+    }
+
+    return render(request, 'Training/dashboard.html', context)
+def update_planned_trainings(request):
+    if request.method == 'POST':
+        team_id = request.POST.get('team')
+        planned_trainings = int(request.POST.get('planned_trainings'))  
+
+        # Assuming you have a way to store planned trainings, for example in the Profile model
+        team_profile = Profile.objects.get(id=team_id)
+        team_profile.planned_trainings = planned_trainings  # Adjust according to your model structure
+        team_profile.save()
+
+        return redirect('dashboard')  # Redirect back to the dashboard or wherever appropriate
+
+    # If GET request or other, return something else or handle accordingly
+    return HttpResponse("Invalid request", status=400)
