@@ -1,0 +1,14 @@
+{% extends "Training/layout.html" %}
+{% block body %}
+
+<body>
+    <h1>Update Planned Trainings</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+</body>
+
+{% endblock %}

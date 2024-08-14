@@ -141,4 +141,20 @@ class TrainingDocuments(models.Model):
 
     def __str__(self):
         return f'{self.documentname} - {self.date}'
- 
+class PlannedTraining(models.Model):
+    profile = models.ForeignKey(Profile, related_name='planned_trainings', on_delete=models.CASCADE)
+    training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)
+    team = models.ForeignKey(Profile, related_name='team_planned_trainings', on_delete=models.CASCADE)
+    plan = models.PositiveIntegerField(default=0)
+
+    @staticmethod
+    def total_planned_modules_for_profile(profile):
+        return PlannedTraining.objects.filter(profile=profile).aggregate(
+            total_plan_count=models.Sum('plan')
+        )['total_plan_count'] or 0
+
+    @staticmethod
+    def total_planned_modules_for_team(team):
+        return PlannedTraining.objects.filter(team=team).aggregate(
+            total_plan_count=models.Sum('plan')
+        )['total_plan_count'] or 0

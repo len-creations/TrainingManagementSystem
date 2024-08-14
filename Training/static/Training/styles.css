@@ -114,7 +114,7 @@ input[readonly], textarea[readonly] {
 
 .module-list li {
     margin-bottom: 0.625rem;
-    background-color: #545252; /* White background */
+    background-color: #eee6e6; /* White background */
     border: 1px solid #ddd;
     border-radius: 0.3125rem; 
     padding: 0.625rem;
@@ -171,7 +171,7 @@ input[readonly], textarea[readonly] {
 }
 
 .module-actions a:hover, .category-actions a:hover {
-    background-color: #465442;
+    background-color: #d0f0c7;
 }
 
 /* Table styles */

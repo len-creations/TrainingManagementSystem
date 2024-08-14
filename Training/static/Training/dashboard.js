@@ -1,12 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if the element exists before accessing it
     const trainingsDataElement = document.getElementById('trainingsData');
     if (!trainingsDataElement) {
         console.error('Element with ID "trainingsData" not found');
         return;
     }
 
-    // Retrieve the JSON data from the script tag
     const trainingsData = JSON.parse(trainingsDataElement.textContent);
 
     const canvasElement = document.getElementById('trainingsPerTeam');
@@ -15,31 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    function getRandomColor() {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
-    // Create a color array if not provided
-    const colors = trainingsData.labels.map(() => getRandomColor());
-
     const ctx = canvasElement.getContext('2d');
 
+    // Extract colors from trainingsData
+    const backgroundColors = trainingsData.colors;
+
+    // Ensure that each dataset has its own set of colors if needed
     const chart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: trainingsData.labels,
-            datasets: [{
-                label: 'Trainings Taken',
-                data: trainingsData.data,
-                backgroundColor: colors,  // Apply the colors
-                borderColor: colors.map(color => color.replace('0.2', '1')),  // Use a darker shade for borders
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: 'Planned Trainings',
+                    data: trainingsData.datasets[0].data,
+                    backgroundColor: backgroundColors[0], 
+                    borderColor: backgroundColors[0],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Completed Trainings',
+                    data: trainingsData.datasets[1].data,
+                    backgroundColor: backgroundColors[1], 
+                    borderColor: backgroundColors[1],
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
             responsive: true,
@@ -56,6 +55,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     title: {
                         display: true,
                         text: 'Number of Trainings'
+                    },
+                    ticks: {
+                        stepSize: 1,  // Adjust step size as needed
+                        callback: function(value) {
+                            return value;  // Custom tick label formatting if needed
+                        }
                     }
                 }
             }

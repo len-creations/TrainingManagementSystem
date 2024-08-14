@@ -27,6 +27,7 @@ urlpatterns = [
     path('upload/',views.upload_document,name='upload_document'),
     path('documents/',views.document_list,name='document_list'),
     path('attendance',views.attendance, name='attendance'),
+    path('report-filter/',views.report_filter_view, name='report_filter_view'),
     path('generate-report/', views.generate_report, name='generate_report'),
     path('dashboard/', views.dashboard, name='dashboard'),
      path('update_planned_trainings/', views.update_planned_trainings, name='update_planned_trainings'),

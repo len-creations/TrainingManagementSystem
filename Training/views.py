@@ -2,13 +2,15 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,login, logout
 from django.http import HttpResponseRedirect,HttpResponseNotFound,JsonResponse,HttpResponse
 from django.urls import reverse
-from .models import User,Profile,TrainingModule,TraineeProgress,TrainingDocuments
+from .models import User,Profile,TrainingModule,TraineeProgress,TrainingDocuments,PlannedTraining
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages  
-from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressFilterForm,TrainingDocumentsForm,TraineeProgressForm
+from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressFilterForm,TrainingDocumentsForm,ReportFilterForm,TraineeProgressForm,PlannedTrainingForm,DateFilterForm
 from PyPDF2 import PdfReader
 import os
+import random
+from django.db import models
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, date
 from django.db.models import Sum,Count, Avg,Q
@@ -24,6 +26,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from weasyprint import HTML
 from django.template.loader import render_to_string
+from django.utils.dateparse import parse_date
 from xhtml2pdf import pisa
 from io import BytesIO
 import openpyxl
@@ -388,9 +391,11 @@ def document_list(request):
 ##################
 def send_test_email(request):
     subject = 'lodige training'
-    message = 'hi phillipe '  # Replace with the recipient's email
+    message = 'hi domininc '  # Replace with the recipient's email
     
-    recipient_list = User.objects.values_list('email', flat=True).distinct()
+    # recipient_list = User.objects.values_list('email', flat=True).distinct()
+    recipient_list =["dominicmunyua55@gmail.com"]
+
 
     sender_name = "LodigeTrainingmanagementsystem"  # Replace with the desired name
     from_email = f"{sender_name} <{settings.DEFAULT_FROM_EMAIL}>"
@@ -401,6 +406,7 @@ def send_test_email(request):
         return HttpResponse('Email sent successfully!')
     except ValueError as e:
         return HttpResponse(f'Error: {e}')
+    
 def test_token_view(request):
     try:
         # Assume you pass the email via query parameter
@@ -433,13 +439,6 @@ def test_token_view(request):
     
     return HttpResponse(response)
 
-# def attendance(request):
-    
-#         html_string = render(request, 'Training/training_attendance_sheet.html')
-#         pdf_file = HTML(string=html_string).write_pdf()
-#         response = HttpResponse(pdf_file, content_type='application/pdf')
-#         response['Content-Disposition'] = 'inline; filename="attendance_sheet.pdf"'
-#         return response
 
 def attendance(request):
     # Render the HTML template to a string
@@ -461,7 +460,26 @@ def attendance(request):
     
     return response
 
+def report_filter_view(request):
+    form = ReportFilterForm(request.GET or None)
+    if request.method == 'GET' and form.is_valid():
+        start_date = form.cleaned_data.get('start_date')
+        end_date = form.cleaned_data.get('end_date')
+
+        # Construct the URL with query parameters
+        url = reverse('generate_report')
+        query_params = f"?start_date={start_date.isoformat()}" if start_date else ""
+        query_params += f"&end_date={end_date.isoformat()}" if end_date else ""
+        return HttpResponseRedirect(f"{url}{query_params}")
+
+    return render(request, 'Training/report_filter_form.html', {'form': form})
+
 def generate_report(request):
+    start_date_str = request.GET.get('start_date', None)
+    end_date_str = request.GET.get('end_date', None)
+    start_date = parse_date(start_date_str) if start_date_str else None
+    end_date = parse_date(end_date_str) if end_date_str else None
+
     # Create a workbook and select the active worksheet
     workbook = openpyxl.Workbook()
     sheet = workbook.active
@@ -473,87 +491,142 @@ def generate_report(request):
     ]
     sheet.append(headers)
 
-    # Get all profiles and their training progress
     profiles = Profile.objects.all()
-    for profile in profiles:
-        trainee_progress = TraineeProgress.objects.filter(trainee=profile.user)
-        total_trainings = trainee_progress.count()
-        # total_exams = trainee_progress.aggregate(total_exams=models.Sum('completed_exams'))['total_exams'] or 0
-        for progress in trainee_progress:
-            sheet.append([
-                profile.staffnumber,
-                profile.name,
-                profile.team,
-                profile.facility,
-                profile.designation,
-                total_trainings,
-                progress.date.strftime('%Y-%m-%d'),
-                # total_exams,
-                progress.date.strftime('%Y-%m-%d')
-            ])
+    employee_latest_progress = {}
 
-    # Create the response object
+    for profile in profiles:
+        progress_queryset = TraineeProgress.objects.filter(trainee=profile.user)
+        if start_date and end_date:
+            progress_queryset = progress_queryset.filter(date__range=(start_date, end_date))
+
+        latest_progress = progress_queryset.order_by('-date').first()
+        
+        if latest_progress:
+            if profile.staffnumber not in employee_latest_progress:
+                total_trainings = progress_queryset.count()
+                
+                # Calculate the total number of completed exams
+                total_exams = progress_queryset.aggregate(total_exams=models.Sum('completed_exams'))['total_exams'] or 0
+
+                employee_latest_progress[profile.staffnumber] = {
+                    'name': profile.name,
+                    'team': profile.team,
+                    'facility': profile.facility,
+                    'designation': profile.designation,
+                    'total_trainings': total_trainings,
+                    'total_exams': total_exams,
+                    'latest_progress_date': latest_progress.date
+                }
+
+    for staffnumber, details in employee_latest_progress.items():
+        sheet.append([
+            staffnumber,
+            details['name'],
+            details['team'],
+            details['facility'],
+            details['designation'],
+            details['total_trainings'],
+            details['latest_progress_date'].strftime('%Y-%m-%d'),
+            details['total_exams'],
+            details['latest_progress_date'].strftime('%Y-%m-%d')
+        ])
+
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="training_report.xlsx"'
     workbook.save(response)
     return response
 
+def update_planned_trainings(request):
+    if request.method == 'POST':
+        form = PlannedTrainingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')  # Redirect back to the dashboard or wherever appropriate
+    else:
+        form = PlannedTrainingForm()
+
+    return render(request, 'Training/update_planned_trainings.html', {'form': form})
+
+def generate_random_color():
+    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
 def dashboard(request):
     now = timezone.now()
     current_year = now.year
 
-    # Data for top-right
-    team_data = Profile.objects.annotate(
-        trainees_count=Count('user'),
-        trainings_count=Count('user__traineeprogress__training_module'),
+    # Initialize the form with the GET parameters (if any)
+    form = DateFilterForm(request.GET)
+    start_date = None
+    end_date = None
+
+    if form.is_valid():
+        start_date = form.cleaned_data.get('start_date')
+        end_date = form.cleaned_data.get('end_date')
+
+    # Base queryset for filtering
+    trainee_progress_queryset = TraineeProgress.objects.all()
+
+    if start_date:
+        trainee_progress_queryset = trainee_progress_queryset.filter(date__gte=start_date)
+    if end_date:
+        trainee_progress_queryset = trainee_progress_queryset.filter(date__lte=end_date)
+
+    # Data for top-right - Aggregating by team
+    team_data = Profile.objects.values('team').annotate(
+        planned_trainings=Sum('planned_trainings__plan'),
+        completed_trainings=Count('user__traineeprogress'),
         exams_count=Count('user__traineeprogress__completed_exams')
-    ).values('team', 'trainees_count', 'trainings_count', 'exams_count')
+    ).order_by('team')
 
     # Data for yearly report
-    planned_trainings = TrainingModule.objects.filter(created_at__year=current_year).count()
-    completed_trainings = TraineeProgress.objects.filter(date__year=current_year).count()
+    planned_trainings = PlannedTraining.objects.count()
+    completed_trainings = trainee_progress_queryset.filter(date__year=current_year).count()
 
     # Data for facilities
-    facilities = Profile.objects.annotate(
-        planned_trainings=Count('user__traineeprogress__training_module'),
+    facilities = Profile.objects.values('facility').annotate(
+        total_planned_trainings=Sum('planned_trainings__plan'),
         completed_trainings=Count('user__traineeprogress')
-    ).values('facility', 'planned_trainings', 'completed_trainings')
+    ).order_by('facility')
 
     # Data for bar graph (top-left)
-    trainings_per_team = Profile.objects.annotate(
-        count=Count('user__traineeprogress__training_module')
-    ).values('team', 'count')
+    trainings_per_team = Profile.objects.values('team').annotate(
+        planned_trainings_count=Sum('planned_trainings__plan'),
+        completed_trainings_count=Sum('user__traineeprogress__training_module__plannedtraining__plan')  # Adjust based on your data model
+    ).order_by('team')
+
+    team_labels = [entry['team'] for entry in trainings_per_team]
+    planned_data = [entry['planned_trainings_count'] for entry in trainings_per_team]
+    completed_data = [entry['completed_trainings_count'] for entry in trainings_per_team]
+    colors = [generate_random_color() for _ in team_labels]
 
     # Data for previous months
-    previous_months = TraineeProgress.objects.filter(date__lt=timezone.now()).values(
+    previous_months = trainee_progress_queryset.values(
         'date__month'
     ).annotate(
-        planned_trainings=Count('training_module'),
+        planned_trainings=Sum('training_module__plannedtraining__plan'),
         actual_trainings=Count('training_module'),
         exams_done=Count('completed_exams')
-    )
+    ).order_by('date__month')
+    yearly_stats = trainee_progress_queryset.values(
+        'date__year'
+    ).annotate(
+        planned_trainings=Sum('training_module__plannedtraining__plan'),
+        actual_trainings=Count('training_module'),
+        exams_done=Count('completed_exams')
+    ).order_by('date__year')
 
     context = {
+        'form': form,
         'team_data': team_data,
         'planned_trainings': planned_trainings,
         'completed_trainings': completed_trainings,
         'facilities': facilities,
         'trainings_per_team': trainings_per_team,
-        'previous_months': previous_months
+        'previous_months': previous_months,
+        'planned_data': planned_data,
+        'completed_data': completed_data,
+        'yearly_stats': yearly_stats,
+        'colors': colors 
     }
 
     return render(request, 'Training/dashboard.html', context)
-def update_planned_trainings(request):
-    if request.method == 'POST':
-        team_id = request.POST.get('team')
-        planned_trainings = int(request.POST.get('planned_trainings'))  
-
-        # Assuming you have a way to store planned trainings, for example in the Profile model
-        team_profile = Profile.objects.get(id=team_id)
-        team_profile.planned_trainings = planned_trainings  # Adjust according to your model structure
-        team_profile.save()
-
-        return redirect('dashboard')  # Redirect back to the dashboard or wherever appropriate
-
-    # If GET request or other, return something else or handle accordingly
-    return HttpResponse("Invalid request", status=400)

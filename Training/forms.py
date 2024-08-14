@@ -1,5 +1,5 @@
 from django import forms
-from .models import User,Profile,TrainingModule,TraineeProgress
+from .models import User,Profile,TrainingModule,TraineeProgress,PlannedTraining
 from django.core.validators import FileExtensionValidator
 from .models import TrainingDocuments
 
@@ -100,3 +100,25 @@ class TrainingDocumentsForm(forms.ModelForm):
             raise forms.ValidationError('Both trainees and training module are required.')
 
         return cleaned_data
+
+class ReportFilterForm(forms.Form):
+    start_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label='Start Date'
+    )
+    end_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        label='End Date'
+    )
+
+class PlannedTrainingForm(forms.ModelForm):
+    class Meta:
+        model = PlannedTraining
+        fields = ['profile', 'training_module', 'team', 'plan']
+
+    
+class DateFilterForm(forms.Form):
+    start_date = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
