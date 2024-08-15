@@ -1,88 +1,84 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Training Management System{% endblock %}</title>
-        <link rel="stylesheet" href="{% static 'Training/styles.css' %}">
-        <link rel="stylesheet" href="{% static 'Training/style.css' %}">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="{% static 'Training/modulehandling.js' %}"></script> 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="{% static 'Training/dashboard.js' %}"></script>
-    </head>
-    <body>
-        <h1>Training Management System</h1>
-    
-        <header class="header">
-            <div class="profile-box">
-                {% if user.is_authenticated %}
-                    <div class="profile-info">
-                        <img src="{% if user.profile.profile_pic %}{{ user.profile.profile_pic.url }}{% else %}{% static 'Training/images/trainingdefault image.png' %}{% endif %}" alt="Profile Picture">
-                        <div class="profile-details">
-                            <p>Signed in as, {{ user.username }}!</p>
-                            <div>{{ user.profile.name }}</div>
-                            <div>Staff Number: {{ user.profile.staffnumber }}</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Training Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'Training/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'Training/style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'Training/modulehandling.js' %}"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'Training/dashboard.js' %}"></script>
+</head>
+<body>
+    <h1>Training Management System</h1>
+
+    <header class="header">
+        <div class="profile-box">
+            {% if user.is_authenticated %}
+                <div class="profile-info">
+                    <img src="{% if user.profile.profile_pic %}{{ user.profile.profile_pic.url }}{% else %}{% static 'Training/images/trainingdefault image.png' %}{% endif %}" alt="Profile Picture">
+                    <div class="profile-details">
+                        <p>Signed in as, {{ user.username }}!</p>
+                        <div>{{ user.profile.name }}</div>
+                        <div>Staff Number: {{ user.profile.staffnumber }}</div>
+                    </div>
+                </div>
+                <ul class="navlink">
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <div class="dropdown">
+                        <button class="dropbtn">Options</button>
+                        <div class="dropdown-content">
+                            <li><a href="{% url 'training_module_list' %}">Training Modules</a></li>
+                            <li><a href="{% url 'category_list' %}">Categories</a></li>
+                            <li><a href="{% url 'profile_Pic' %}">Add Profile Pic</a></li>
+                            <li><a href="{% url 'update_profile' %}">Update Profile</a></li>
                         </div>
                     </div>
-                    <ul class="navlink">
-                        <li><a href="{% url 'logout' %}">Log Out</a></li>
-                        <li><a href="{% url 'index' %}">Home</a></li>
-                        <div class="dropdown">
-                            <button class="dropbtn">Options</button>
-                            <div class="dropdown-content">
-                        <li><a href="{% url 'training_module_list' %}">Training Modules</a></li>
-                        <li> <a href="{% url 'category_list' %}">Categories</a></li>
-                        <li><a href="{% url 'profile_Pic' %}">Add Profile Pic</a></li>
-                        <li><a href="{% url 'update_profile' %}">Create Profile</a></li>
-                    </div>
-                    </div>
 
-                        {% if user.profile.is_manager %}
+                    {% if user.profile.is_manager %}
                         <li><a href="{% url 'upload_document' %}">Upload Document</a></li>
                         <li><a href="{% url 'document_list' %}">See Documents</a></li>
-                        <li><a href="{% url 'send_email' %}" value="disabled">Send Email</a></li>
-                        {% endif %}
+                        <li><a href="{% url 'send_email' %}">Send Email</a></li>
+                    {% endif %}
+
+                    {% if user.profile.is_reporting %}
                         <div class="dropdown">
                             <button class="dropbtn">More Options</button>
                             <div class="dropdown-content">
                                 <a href="{% url 'training_module_create' %}">Create New Training Module</a>
-
-                                {% if user.profile.is_reporting %}
-                                <a href="{% url 'update_planned_trainings' %}">addplannedtrainings</a>
-                                <a href="{% url 'report_filter_view' %}">Generate report</a>    
-                                <a href="{% url 'update_planned_trainings' %}">Generate dashboard</a>
-                                <li><a href="{% url 'attendance' %}">attendance sheet</a></li> 
+                                <a href="{% url 'update_planned_trainings' %}">Add Planned Trainings</a>
+                                <a href="{% url 'report_filter_view' %}">Generate Report</a>
+                                <a href="{% url 'update_planned_trainings' %}">Generate Dashboard</a>
+                                <li><a href="{% url 'attendance' %}">Attendance Sheet</a></li> 
                                 <li><a href="{% url 'trainee_progress_summary' %}">See Progress</a></li>
-                                {% endif %}
                             </div>
                         </div>
-                    </ul>
-                {% else %}
-                    <ul class="nav">
-                        <li><a href="{% url 'login' %}?next={{ request.path }}">Log In</a></li>
-                        <li><a href="{% url 'register' %}">Register</a></li>
-                        <li><a href="{% url 'password_reset' %}">Forgot Password? Reset Here</a></li>
-                    </ul>
-                {% endif %}
-            </div>
-        </header>
-    
-        <main>
-            
-            {% block body %}
-            {% endblock %}
-        </main>
-    
-        <footer>
-            <div class="footer-content">
-                <img src="{% static 'Training/images/footer logo.png' %}" alt="Footer Image">
-                <p>&copy; 2024 Training Management System</p>
-            </div>
-        </footer>
-    </body>
-    </html>
+                    {% endif %}
+                </ul>
+            {% else %}
+                <ul class="nav">
+                    <li><a href="{% url 'login' %}?next={{ request.path }}">Log In</a></li>
+                    <li><a href="{% url 'register' %}">Register</a></li>
+                    <li><a href="{% url 'password_reset' %}">Forgot Password? Reset Here</a></li>
+                </ul>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        {% block body %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <img src="{% static 'Training/images/footer logo.png' %}" alt="Footer Image">
+            <p>&copy; 2024 Training Management System</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -278,13 +278,13 @@ th, td {
 /* Style the dropdown button */
 .dropbtn {
     background-color: #e0e0e0;
-    margin-left:5px; ;
     color: rgb(10, 10, 10);
     padding: 10px;
     font-size: 16px;
     border: none;
     cursor: pointer;
     border-radius: 15px;
+    margin: 0; /* Adjusted margin for better alignment */
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -296,6 +296,8 @@ th, td {
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     border-radius: 5px;
+    right: 0; /* Align dropdown to the right of the button */
+    top: 100%; /* Position it directly below the button */
 }
 
 /* Links inside the dropdown */
@@ -313,7 +315,24 @@ th, td {
     margin: 0.5em 0;
 }
 
+/* Change background on hover */
 .dropdown-content a:hover {
     background-color: #76b588;
     text-decoration: underline;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Optional: Adjust dropdown on smaller screens */
+@media (max-width: 768px) {
+    .dropdown-content {
+        min-width: 100%; /* Make the dropdown full-width on smaller screens */
+    }
+
+    .dropdown-content a {
+        padding: 0.5em; /* Adjust padding for better fit on small screens */
+    }
 }
