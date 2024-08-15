@@ -32,21 +32,33 @@
                     <ul class="navlink">
                         <li><a href="{% url 'logout' %}">Log Out</a></li>
                         <li><a href="{% url 'index' %}">Home</a></li>
-                        <li><a href="{% url 'trainee_progress_summary' %}">See Progress</a></li>
+                        <div class="dropdown">
+                            <button class="dropbtn">Options</button>
+                            <div class="dropdown-content">
+                        <li><a href="{% url 'training_module_list' %}">Training Modules</a></li>
+                        <li> <a href="{% url 'category_list' %}">Categories</a></li>
+                        <li><a href="{% url 'profile_Pic' %}">Add Profile Pic</a></li>
+                        <li><a href="{% url 'update_profile' %}">Create Profile</a></li>
+                    </div>
+                    </div>
+
+                        {% if user.profile.is_manager %}
                         <li><a href="{% url 'upload_document' %}">Upload Document</a></li>
                         <li><a href="{% url 'document_list' %}">See Documents</a></li>
                         <li><a href="{% url 'send_email' %}" value="disabled">Send Email</a></li>
+                        {% endif %}
                         <div class="dropdown">
                             <button class="dropbtn">More Options</button>
                             <div class="dropdown-content">
-                                <a href="{% url 'category_list' %}">Categories</a>
-                                <a href="{% url 'training_module_list' %}">Training Modules</a>
-                                <a href="{% url 'profile_Pic' %}">Add Profile Pic</a>
-                                <a href="{% url 'update_profile' %}">Create Profile</a>
                                 <a href="{% url 'training_module_create' %}">Create New Training Module</a>
+
+                                {% if user.profile.is_reporting %}
                                 <a href="{% url 'update_planned_trainings' %}">addplannedtrainings</a>
                                 <a href="{% url 'report_filter_view' %}">Generate report</a>    
                                 <a href="{% url 'update_planned_trainings' %}">Generate dashboard</a>
+                                <li><a href="{% url 'attendance' %}">attendance sheet</a></li> 
+                                <li><a href="{% url 'trainee_progress_summary' %}">See Progress</a></li>
+                                {% endif %}
                             </div>
                         </div>
                     </ul>
@@ -61,7 +73,7 @@
         </header>
     
         <main>
-            <li><a href="{% url 'attendance' %}">attendance sheet</a></li>
+            
             {% block body %}
             {% endblock %}
         </main>

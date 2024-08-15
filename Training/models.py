@@ -32,6 +32,10 @@ class Profile(models.Model):
     email = models.EmailField(unique=True)
     age = models.PositiveIntegerField(default=0)
     enrolled_at = models.DateTimeField(auto_now_add=True)
+    def is_manager(self):
+        return any(keyword in self.designation.lower() for keyword in ['manager', 'reporting', 'training'])
+    def is_reporting(self):
+        return self.designation.lower() == 'reporting'
 
     def __str__(self):
         return f'{self.name}, {self.staffnumber}'
