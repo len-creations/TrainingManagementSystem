@@ -34,6 +34,7 @@
                         <div class="dropdown-content">
                             <li><a href="{% url 'training_module_list' %}">Training Modules</a></li>
                             <li><a href="{% url 'category_list' %}">Categories</a></li>
+                            <li><a href="{% url 'trainee-summary' pk=user.pk %}">summary</a></li>
                             <li><a href="{% url 'profile_Pic' %}">Add Profile Pic</a></li>
                             <li><a href="{% url 'update_profile' %}">Update Profile</a></li>
                         </div>
@@ -50,6 +51,7 @@
                             <button class="dropbtn">More Options</button>
                             <div class="dropdown-content">
                                 <a href="{% url 'training_module_create' %}">Create New Training Module</a>
+                                <a href="{% url 'update-exam' %}">update exams</a>
                                 <a href="{% url 'update_planned_trainings' %}">Add Planned Trainings</a>
                                 <a href="{% url 'report_filter_view' %}">Generate Report</a>
                                 <a href="{% url 'update_planned_trainings' %}">Generate Dashboard</a>

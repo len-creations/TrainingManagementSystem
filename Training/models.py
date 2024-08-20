@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from PyPDF2 import PdfReader
 from django.utils import timezone
+from django.db.models import Avg,Count,Sum
 import json
 # # Create your models here.
 # class User(AbstractUser):
@@ -39,6 +40,19 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.name}, {self.staffnumber}'
+    @property
+    def average_marks(self):
+        # Calculate average marks dynamically
+        total_marks = self.exam_set.aggregate(total_marks=Sum('total_marks'))['total_marks'] or 0
+        total_modules_count = self.exam_set.values('training_module').distinct().count()
+        return total_marks / total_modules_count if total_modules_count > 0 else 0
+    @property
+    def count_of_exams(self):
+        return self.exam_set.count()
+
+    @property
+    def count_of_modules(self):
+        return self.TrainingModule_set.values('training_module').distinct().count()
     
 class TrainingModule(models.Model):
     title = models.CharField(max_length=200)
@@ -162,3 +176,12 @@ class PlannedTraining(models.Model):
         return PlannedTraining.objects.filter(team=team).aggregate(
             total_plan_count=models.Sum('plan')
         )['total_plan_count'] or 0
+class Exam(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)
+    total_marks = models.PositiveIntegerField()
+    count_of_exams = models.PositiveIntegerField()
+    date_of_exam = models.DateTimeField()
+
+    def __str__(self):
+        return f'Exam on {self.date_of_exam} for {self.profile.name} in {self.training_module.title}'

@@ -1,0 +1,15 @@
+{% extends 'Training/layout.html' %}
+{% block body %}
+<head>
+    <title>Create Exam</title>
+</head>
+<body>
+    <h1>Create Exam</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+</body>
+
+{% endblock %}

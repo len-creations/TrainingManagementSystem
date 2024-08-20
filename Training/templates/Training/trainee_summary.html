@@ -1,0 +1,34 @@
+{% extends 'Training/layout.html' %}
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainee Summary</title>
+</head>
+<body>
+    <h1>Summary for {{ profile.name }}</h1>
+
+    <form method="get" action="">
+        {{ form.as_p }}
+        <button type="submit">Filter</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Total Exams</th>
+                <th>Average Marks</th>
+                <th>Total Completed Modules</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ total_exams }}</td>
+                <td>{{ average_marks }}%</td>
+                <td>{{ total_completed_modules }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+{% endblock %}

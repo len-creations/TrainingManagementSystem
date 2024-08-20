@@ -2,11 +2,11 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,login, logout
 from django.http import HttpResponseRedirect,HttpResponseNotFound,JsonResponse,HttpResponse
 from django.urls import reverse
-from .models import User,Profile,TrainingModule,TraineeProgress,TrainingDocuments,PlannedTraining
+from .models import User,Profile,TrainingModule,TraineeProgress,TrainingDocuments,PlannedTraining,Exam
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages  
-from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressFilterForm,TrainingDocumentsForm,ReportFilterForm,TraineeProgressForm,PlannedTrainingForm,DateFilterForm
+from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressFilterForm,TrainingDocumentsForm,ReportFilterForm,TraineeProgressForm,PlannedTrainingForm,DateFilterForm,ExamForm
 from PyPDF2 import PdfReader
 import os
 import random
@@ -174,6 +174,9 @@ def training_module_delete(request, pk):
         return redirect('show_all')  # Redirect to the list view after deletion
 
     return render(request, 'Training/training_module_confirm_delete.html', {'training_module': training_module})
+def show_all(request):
+    training_modules = TrainingModule.objects.all()
+    return render(request, 'Training/deletion_view.html', {'training_modules': training_modules})
 
 
 @login_required
@@ -286,37 +289,56 @@ def get_module_status(request):
         return JsonResponse({'status': 'error', 'message': f"Database error: {str(e)}"})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}'})
+ #######################################################reports##################################   
+def trainee_summary(request, pk):
+    form = DateFilterForm(request.GET or None)
+    profile = get_object_or_404(Profile, pk=pk)
+    
+    if form.is_valid():
+        start_date = form.cleaned_data.get('start_date')
+        end_date = form.cleaned_data.get('end_date')
+        
+        if start_date and end_date:
+            # Ensure start_date and end_date are datetime objects
+            if isinstance(start_date, date) and not isinstance(start_date, datetime):
+                start_date = datetime.combine(start_date, datetime.min.time())
+            if isinstance(end_date, date) and not isinstance(end_date, datetime):
+                end_date = datetime.combine(end_date, datetime.max.time())
+                
+            # Make aware if necessary
+            start_date = timezone.make_aware(start_date) if timezone.is_naive(start_date) else start_date
+            end_date = timezone.make_aware(end_date) if timezone.is_naive(end_date) else end_date
+            
+            # Filter exams and modules by date range
+            exams = Exam.objects.filter(profile=profile, date_of_exam__range=(start_date, end_date))
+            modules = TrainingModule.objects.filter(exam__profile=profile, exam__date_of_exam__range=(start_date, end_date)).distinct()
+        else:
+            # If no date range, get all exams and modules for the profile
+            exams = Exam.objects.filter(profile=profile)
+            modules = TrainingModule.objects.filter(exam__profile=profile).distinct()
+            print(modules)
+    else:
+        # Handle the case when the form is not valid
+        exams = Exam.objects.filter(profile=profile)
+        modules = TrainingModule.objects.filter(exam__profile=profile).distinct()
+    
+    # Calculate summary statistics
+    total_exams = exams.count()
+    total_modules = modules.count()
+    average_marks = exams.aggregate(average_marks=Avg('total_marks'))['average_marks'] or 0
+    total_completed_modules = TraineeProgress.total_completed_modules(profile.user)
 
-# def trainee_progress_summary(request):
-#     form = TraineeProgressFilterForm(request.GET or None)
-#     completed_modules = TraineeProgress.objects.all()
+    context = {
+        'profile': profile,
+        'form': form,
+        'total_exams': total_exams,
+        'total_modules': total_modules,
+        'average_marks': average_marks,
+        'total_completed_modules': total_completed_modules,
+    }
 
-#     if form.is_valid():
-#         trainee = form.cleaned_data.get('trainee')
-#         training_module = form.cleaned_data.get('training_module')
-#         start_date = form.cleaned_data.get('start_date')
-#         end_date = form.cleaned_data.get('end_date')
+    return render(request, 'Training/trainee_summary.html', context)
 
-#         if trainee:
-#             completed_modules = completed_modules.filter(trainee=trainee)
-#         if training_module:
-#             completed_modules = completed_modules.filter(training_module=training_module)
-#         if start_date and end_date:
-#             completed_modules = completed_modules.filter(date__range=[start_date, end_date])
-
-#         total_modules = completed_modules.aggregate(total_modules=Sum('completed_modules'))['total_modules'] or 0
-#         total_exams = completed_modules.aggregate(total_exams=Sum('completed_exams'))['total_exams'] or 0
-
-#         context = {
-#             'form': form,
-#             'completed_modules': completed_modules,
-#             'total_modules': total_modules,
-#             'total_exams': total_exams,
-#         }
-#         return render(request, 'Training/trainee_progress_summary.html', context)
-
-#     # If the form is not valid, return the form with empty data
-#     return render(request, 'Training/trainee_progress_summary.html', {'form': form})
 def trainee_progress_summary(request):
     form = TraineeProgressFilterForm(request.GET or None)
     completed_modules = TraineeProgress.objects.all()
@@ -359,6 +381,7 @@ def trainee_progress_summary(request):
     # If the form is not valid, return the form with empty data
     return render(request, 'Training/trainee_progress_summary.html', {'form': form})
 
+
 def upload_document(request):
     if request.method == 'POST':
         form = TrainingDocumentsForm(request.POST, request.FILES)
@@ -394,7 +417,7 @@ def send_test_email(request):
     message = 'hi domininc '  # Replace with the recipient's email
     
     # recipient_list = User.objects.values_list('email', flat=True).distinct()
-    recipient_list =["dominicmunyua55@gmail.com"]
+    recipient_list =[""]
 
 
     sender_name = "LodigeTrainingmanagementsystem"  # Replace with the desired name
@@ -630,3 +653,15 @@ def dashboard(request):
     }
 
     return render(request, 'Training/dashboard.html', context)
+
+####################exams#####################
+def update_exam(request):
+    if request.method == 'POST':
+        form = ExamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('success_page')
+    else:
+        form =ExamForm()
+
+    return render(request, 'Training/exam_form.html', {'form': form}) 

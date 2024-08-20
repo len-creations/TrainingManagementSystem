@@ -1,0 +1,22 @@
+{% extends 'Training/layout.html' %}
+{% load static %}
+{% block body %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Training Modules</title>
+</head>
+<body>
+    <h1>All Training Modules</h1>
+
+    <ul class="module-list">
+        {% for module in training_modules %}
+            <li>
+                <a href="{% url 'training_module_detail' module.pk %}">{{ module.title }}</a>
+                <a href="{% url 'training_module_delete' module.pk %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+{% endblock %}

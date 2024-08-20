@@ -1,5 +1,5 @@
 from django import forms
-from .models import User,Profile,TrainingModule,TraineeProgress,PlannedTraining
+from .models import User,Profile,TrainingModule,TraineeProgress,PlannedTraining,Exam
 from django.core.validators import FileExtensionValidator
 from .models import TrainingDocuments
 
@@ -122,3 +122,8 @@ class PlannedTrainingForm(forms.ModelForm):
 class DateFilterForm(forms.Form):
     start_date = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
     end_date = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
+
+class ExamForm(forms.ModelForm):
+    class Meta:
+        model = Exam
+        fields = ['profile', 'training_module', 'total_marks', 'count_of_exams', 'date_of_exam']
