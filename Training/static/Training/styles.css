@@ -336,3 +336,57 @@ th, td {
         padding: 0.5em; /* Adjust padding for better fit on small screens */
     }
 }
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 100px; /* Centering the search bar vertically */
+}
+
+/* Style for the search bar */
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+.results {
+    position: absolute;
+    top: 100%; /* Position below the search bar */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none; /* Remove the top border for a seamless look */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 10px 10px; /* Round the bottom corners */
+    max-height: 200px; /* Limit the height */
+    overflow-y: auto; /* Add scroll if the results exceed the max height */
+}
+
+/* Style for each result item */
+.result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    text-align: left;
+}
+
+/* Hover effect for result items */
+.result-item:hover {
+    background-color: #bfe0a4;
+}
+
+/* Remove the border for the last item */
+.result-item:last-child {
+    border-bottom: none;
+}
+.result-item a:hover {
+    background-color: #1ac74b;
+    text-decoration: underline;
+}

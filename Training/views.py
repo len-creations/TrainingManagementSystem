@@ -32,8 +32,73 @@ from io import BytesIO
 import openpyxl
 
 # Create your views here.
-def index(request):
-    return render(request,'Training/layout.html')
+# def index(request):
+#     return render(request,'Training/layout.html')
+def search(request):
+    query = request.GET.get('q')
+    results = []
+
+    if query:
+        # Search in Profile
+        profile_results = Profile.objects.filter(
+            Q(name__icontains=query) | 
+            Q(staffnumber__icontains=query) | 
+            Q(designation__icontains=query)
+        )
+        for profile in profile_results:
+            results.append({
+                'type': 'Profile',
+                'name': profile.name,
+                'description': profile.designation,
+                'url': profile.get_absolute_url(), 
+            })
+
+        # Search in TrainingModule
+        module_results = TrainingModule.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(code__icontains=query)
+        )
+        for module in module_results:
+            results.append({
+                'type': 'Training Module',
+                'name': module.title,
+                'description': module.description,
+                'url': module.get_absolute_url(),  
+            })
+
+        # Search in Exam
+        exam_results = Exam.objects.filter(
+            Q(profile__name__icontains=query) | 
+            Q(training_module__title__icontains=query)
+        )
+        for exam in exam_results:
+            results.append({
+                'type': 'Exam',
+                'name': exam.profile.name,
+                'description': f'Exam for {exam.training_module.title} on {exam.date_of_exam}',
+                'url': exam.get_absolute_url(),  
+            })
+
+        # Search in TrainingDocuments
+        document_results = TrainingDocuments.objects.filter(
+            Q(trainee_names__icontains=query) |
+            Q(training_module_name__icontains=query) |
+            Q(documentname__icontains=query)
+        )
+        for document in document_results:
+            results.append({
+                'type': 'Document',
+                'name': document.documentname,
+                'description': document.training_module_name,
+                'url': document.get_absolute_url(), 
+            })
+
+    context = {
+        'query': query,
+        'results': results,
+    }
+    return render(request, 'Training/index.html', context)
 ###########################ACCOUNT REGISTRATION AND PROFILE HANDLING############################
 def login_view(request):
     if request.method=="POST":
@@ -294,7 +359,13 @@ def trainee_summary(request, pk):
     form = DateFilterForm(request.GET or None)
     profile = get_object_or_404(Profile, pk=pk)
     
-    if form.is_valid():
+    # Initialize context with default values
+    total_exams = 0
+    total_modules = 0
+    average_marks = 0
+    total_completed_modules = 0
+    
+    if form.is_valid() and form.cleaned_data:
         start_date = form.cleaned_data.get('start_date')
         end_date = form.cleaned_data.get('end_date')
         
@@ -316,21 +387,16 @@ def trainee_summary(request, pk):
             # If no date range, get all exams and modules for the profile
             exams = Exam.objects.filter(profile=profile)
             modules = TrainingModule.objects.filter(exam__profile=profile).distinct()
-            print(modules)
-    else:
-        # Handle the case when the form is not valid
-        exams = Exam.objects.filter(profile=profile)
-        modules = TrainingModule.objects.filter(exam__profile=profile).distinct()
-    
-    # Calculate summary statistics
-    total_exams = exams.count()
-    total_modules = modules.count()
-    average_marks = exams.aggregate(average_marks=Avg('total_marks'))['average_marks'] or 0
-    total_completed_modules = TraineeProgress.total_completed_modules(profile.user)
+        
+        # Calculate summary statistics
+        total_exams = exams.count()
+        total_modules = modules.count()
+        average_marks = exams.aggregate(average_marks=Avg('total_marks'))['average_marks'] or 0
+        total_completed_modules = TraineeProgress.total_completed_modules(profile.user)
 
     context = {
         'profile': profile,
-        'form': form,
+        'form': form,  # Pass the original form so that it retains the input
         'total_exams': total_exams,
         'total_modules': total_modules,
         'average_marks': average_marks,
@@ -338,6 +404,7 @@ def trainee_summary(request, pk):
     }
 
     return render(request, 'Training/trainee_summary.html', context)
+
 
 def trainee_progress_summary(request):
     form = TraineeProgressFilterForm(request.GET or None)
@@ -665,3 +732,4 @@ def update_exam(request):
         form =ExamForm()
 
     return render(request, 'Training/exam_form.html', {'form': form}) 
+

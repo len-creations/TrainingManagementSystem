@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from PyPDF2 import PdfReader
+from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Avg,Count,Sum
 import json
@@ -54,6 +55,9 @@ class Profile(models.Model):
     def count_of_modules(self):
         return self.TrainingModule_set.values('training_module').distinct().count()
     
+    def get_absolute_url(self):
+        return reverse('trainee-summary',args=[str(self.pk)])
+    
 class TrainingModule(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -72,6 +76,9 @@ class TrainingModule(models.Model):
                 pdf_reader = PdfReader(f)
                 self.total_pages = len(pdf_reader.pages)
                 self.save()
+
+    def get_absolute_url(self):
+        return reverse('training_module_detail',args=[str(self.pk)])
 
 class TraineeProgress(models.Model):
     trainee = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -159,6 +166,11 @@ class TrainingDocuments(models.Model):
 
     def __str__(self):
         return f'{self.documentname} - {self.date}'
+    
+    def get_absolute_url(self):
+        return reverse('document_list')
+    
+
 class PlannedTraining(models.Model):
     profile = models.ForeignKey(Profile, related_name='planned_trainings', on_delete=models.CASCADE)
     training_module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE)
@@ -185,3 +197,7 @@ class Exam(models.Model):
 
     def __str__(self):
         return f'Exam on {self.date_of_exam} for {self.profile.name} in {self.training_module.title}'
+    
+    def get_absolute_url(self):
+        return reverse('trainee-summary',args=[str(self.pk)]) 
+
