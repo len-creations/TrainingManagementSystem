@@ -27,8 +27,8 @@
                     </div>
                 </div>
                 <ul class="navlink">
-                    <li><a href="{% url 'logout' %}">Log Out</a></li>
                     <li><a href="{% url 'search' %}">Home</a></li>
+                    <li><a href="{% url 'logout' %}">Log Out</a></li>
                     <div class="dropdown">
                         <button class="dropbtn">Options</button>
                         <div class="dropdown-content">
@@ -63,6 +63,7 @@
                 </ul>
             {% else %}
                 <ul class="nav">
+                    <li><a href="{% url 'search' %}">Home</a></li>
                     <li><a href="{% url 'login' %}?next={{ request.path }}">Log In</a></li>
                     <li><a href="{% url 'register' %}">Register</a></li>
                     <li><a href="{% url 'password_reset' %}">Forgot Password? Reset Here</a></li>

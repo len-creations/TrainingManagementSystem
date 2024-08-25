@@ -119,7 +119,7 @@ class TraineeProgress(models.Model):
 class TrainingDocuments(models.Model):
     trainee_names = models.TextField(blank=True, null=True)  # JSON string to store list of trainee names
     training_module_name = models.CharField(max_length=100, blank=True, null=True)  # Store training module name
-    documentname = models.CharField(max_length=100)
+    documentname = models.CharField(max_length=150)
     document = models.FileField(upload_to='Training/ATTENDANCE_SHEET/', blank=True, null=True)
     document_domain = models.CharField(max_length=20)
     facility = models.CharField(max_length=10)

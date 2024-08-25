@@ -32,14 +32,14 @@ from io import BytesIO
 import openpyxl
 
 # Create your views here.
-# def index(request):
-#     return render(request,'Training/layout.html')
+def index(request):
+    return render(request,'Training/index.html')
 def search(request):
     query = request.GET.get('q')
     results = []
 
     if query:
-        # Search in Profile
+        # Search in Profile, TrainingModule,Exam,TrainingDocuments
         profile_results = Profile.objects.filter(
             Q(name__icontains=query) | 
             Q(staffnumber__icontains=query) | 
@@ -53,7 +53,7 @@ def search(request):
                 'url': profile.get_absolute_url(), 
             })
 
-        # Search in TrainingModule
+    
         module_results = TrainingModule.objects.filter(
             Q(title__icontains=query) |
             Q(description__icontains=query) |
@@ -67,7 +67,7 @@ def search(request):
                 'url': module.get_absolute_url(),  
             })
 
-        # Search in Exam
+        
         exam_results = Exam.objects.filter(
             Q(profile__name__icontains=query) | 
             Q(training_module__title__icontains=query)
@@ -80,7 +80,6 @@ def search(request):
                 'url': exam.get_absolute_url(),  
             })
 
-        # Search in TrainingDocuments
         document_results = TrainingDocuments.objects.filter(
             Q(trainee_names__icontains=query) |
             Q(training_module_name__icontains=query) |
@@ -147,10 +146,25 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "Training/register.html")
-            
-def success_page(request):
-    return render(request, 'Training/success.html')
 
+@login_required
+def profile_Pic(request):
+    try:
+        profile_instance = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        messages.error(request, 'Profile not found. Please create a profile first.')
+        return redirect('create_profile')  # Redirect to profile creation page or similar
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect("success_page")
+    else:
+        form =UserProfileForm(instance=profile_instance)
+
+    return render(request, 'Training/create_profile.html', {'form': form})
 @login_required
 def create_profile(request):
     user_instance = request.user
@@ -176,7 +190,6 @@ def create_profile(request):
           
 @login_required
 def update_profile(request):
-    # Retrieve or create a Profile instance for the current user
     try:
         profile_instance = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
@@ -194,26 +207,8 @@ def update_profile(request):
 
     return render(request, 'Training/create_profile.html', {'form': form})
 
-
-@login_required
-def profile_Pic(request):
-    # Retrieve or create a Profile instance for the current user
-    try:
-        profile_instance = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        messages.error(request, 'Profile not found. Please create a profile first.')
-        return redirect('create_profile')  # Redirect to profile creation page or similar
-
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile_instance)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Profile updated successfully!')
-            return redirect("success_page")
-    else:
-        form =UserProfileForm(instance=profile_instance)
-
-    return render(request, 'Training/create_profile.html', {'form': form})
+def success_page(request):
+    return render(request, 'Training/success.html')
 
 def custom_404_view(request,exception):
     if "Not Found:" in str(exception):  # Check if the exception message contains "Not Found:"
@@ -236,7 +231,7 @@ def training_module_delete(request, pk):
 
     if request.method == 'POST':
         training_module.delete()
-        return redirect('show_all')  # Redirect to the list view after deletion
+        return redirect('show_all') 
 
     return render(request, 'Training/training_module_confirm_delete.html', {'training_module': training_module})
 def show_all(request):
@@ -269,7 +264,7 @@ def training_module_detail(request, pk):
         'training_module': training_module,
         'page_range': range(1, training_module.total_pages + 1) if training_module.total_pages else None
     })
-
+#display all categories available
 def category_list(request):
     categories = TrainingModule.objects.values_list('category', flat=True).distinct()
     return render(request, 'Training/categories.html', {'categories': categories})
@@ -281,7 +276,7 @@ def category_detail(request, category):
         'training_modules': modules
     })
 
-    
+  
 @csrf_exempt
 def update_module_status(request):
     if request.method == "POST":
@@ -303,20 +298,18 @@ def update_module_status(request):
             )
 
             if action == 'complete':
-                if progress_record.progress == 0:  # Only increment if not already completed
+                if progress_record.progress == 0: 
                     progress_record.completed_modules += completed_modules
-                    # progress_record.completed_exams += completed_exams
-                    progress_record.progress = 100  # Mark as complete
+                    progress_record.progress = 100  
                     progress_record.save()
                     return JsonResponse({'status': 'success', 'message': 'Module marked as complete.'})
                 else:
                     return JsonResponse({'status': 'info', 'message': 'Module already marked as complete.'})
 
             elif action == 'uncomplete':
-                if progress_record.progress == 100:  # Only decrement if already completed
+                if progress_record.progress == 100:  
                     progress_record.completed_modules -= completed_modules
-                    # progress_record.completed_exams -= completed_exams
-                    progress_record.progress = 0  # Mark as incomplete
+                    progress_record.progress = 0  
                     progress_record.save()
                     return JsonResponse({'status': 'success', 'message': 'Module marked as incomplete.'})
                 else:
@@ -327,7 +320,6 @@ def update_module_status(request):
         except (User.DoesNotExist, TrainingModule.DoesNotExist) as e:
             return JsonResponse({'status': 'error', 'message': f"Database error: {str(e)}"})
         except Exception as e:
-            # Log the full traceback for debugging
             return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}\n{traceback.format_exc()}'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
@@ -479,7 +471,7 @@ def document_list(request):
     return render(request, 'Training/document_list.html', {'documents': documents})
 
 ##################
-def send_test_email(request):
+def send_email(request):
     subject = 'lodige training'
     message = 'hi domininc '  # Replace with the recipient's email
     

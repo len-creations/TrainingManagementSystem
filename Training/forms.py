@@ -84,12 +84,15 @@ class TrainingDocumentsForm(forms.ModelForm):
     training_module_name = forms.CharField(
         max_length=100,
         help_text='Enter the name of the training module.',
-        required=True
+        required=True   
     )
 
     class Meta:
         model = TrainingDocuments
         fields = ['documentname', 'document', 'document_domain', 'facility','Trainingdate']
+        widgets = {
+            'Trainingdate': forms.DateInput(format='%d/%m/%Y', attrs={'type': 'date', 'placeholder': 'dd/mm/yyyy'})
+        }
 
     def clean(self):
         cleaned_data = super().clean()

@@ -10,8 +10,10 @@
     
     <!-- Module Actions Section -->
     <div class="module-actions">
+        
         {% if user.profile.is_manager %}
             <a href="{% url 'training_module_create' %}">Create New Training Module</a> 
+            <a href="{% url 'show_all'  %}">Delete Training Module</a>
         {% endif %}
     </div>
     
@@ -20,9 +22,7 @@
         {% for module in training_modules %}
             <li>
                 <a href="{% url 'training_module_detail' module.pk %}">{{ module.title }}</a>
-                {% if user.profile.is_manager %}
-                    <a href="{% url 'training_module_delete' module.pk %}">Delete Training Module</a>
-                {% endif %}
+            
             </li>
         {% endfor %}
     </ul>
