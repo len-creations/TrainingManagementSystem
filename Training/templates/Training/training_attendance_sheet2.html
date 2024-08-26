@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Include your custom CSS here to style the document */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Full viewport height */
+            display: flex;
+            box-sizing: border-box;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+        }
+        .container {
+            width: 100%;
+            max-width: 800px; /* Adjust as needed */
+            height: 50vh; /* Half the viewport height */
+            overflow: auto; /* Add scroll if content overflows */
+        }
+        .header {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            height: 100%; /* Fill the container */
+        }
+        table, th, td {
+            border: 2px solid black; /* Thicker border for table and cells */
+            padding: 8px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            height: 35px; /* Height for rows */
+        }
+        /* Specific widths for columns */
+        td:nth-child(1), th:nth-child(1) {
+            width: 50px; /* Width for the No. column */
+        }
+        td:nth-child(2), th:nth-child(2) {
+            width: 600px; /* Width for the Attendees column */
+        }
+        td:nth-child(3), th:nth-child(3) {
+            width: 120px; /* Width for the Staff ID no. column */
+        }
+        td:nth-child(4), th:nth-child(4) {
+            width: 150px; /* Width for the Designation column */
+        }
+        td:nth-child(5), th:nth-child(5) {
+            width: 100px; /* Width for the Signature column */
+        }
+        tr:nth-child(even) {
+            background-color: #0e0d0d; /* Dark background for even rows */
+            color: white; /* Text color for better contrast */
+        }
+        .signature {
+            height: 50px;
+        }
+    </style>
+</head>
+{% load custom_filters %}
+<body>
+    <div class="header">
+        <h2>Maintenance Training Attendance Sheet</h2>
+        <!-- Include other header details -->
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Attendees</th>
+                <th>Staff ID no.</th>
+                <th>Designation</th>
+                <th>Signature</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendee in attendees %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ attendee.name }}</td>
+                <td>{{ attendee.staff_id }}</td>
+                <td>{{ attendee.designation }}</td>
+                <td class="signature"></td>
+            </tr>
+            {% endfor %}
+            <!-- Add 20 empty rows -->
+            {% for i in 20|range_filter %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="signature"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

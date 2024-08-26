@@ -1,0 +1,31 @@
+{% extends 'Training/layout.html' %}
+{% load static %}
+{% block body %}
+<div class="search-container">
+    <h1>Lodige Training System</h1>
+
+    <div class="search-wrapper">
+        <div id="form-container">
+            <form id="search-form" action="{% url 'search' %}">
+                <input type="text" name="q" class="search-bar" placeholder="Search for trainees, modules, documents, etc." autocomplete="off">
+                <button type="submit" style="display:none;">Search</button>
+            </form>
+            {% if results %}
+            <div class="results">
+                {% for result in results %}
+                <div class="result-item">
+                    <a href="{{ result.url }}" class="result-item">
+                        <strong>{{ result.type }}:</strong> {{ result.name }} - {{ result.description }}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    const searchUrl = "{% url 'search' %}";
+</script>
+<script src="{% static 'Training/search.js' %}"></script>
+{% endblock %}

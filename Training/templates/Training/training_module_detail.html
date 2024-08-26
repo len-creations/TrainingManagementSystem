@@ -1,0 +1,42 @@
+{% extends 'Training/layout.html' %}
+{% load static %}
+{% block body %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Training Module Detail</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <h1>{{ training_module.title }}</h1>
+    <p>{{ training_module.description }}</p>
+
+    <div class="file-container">
+        {% if training_module.file.name|slice:'-4:' == '.pdf' %}
+            <!-- PDF file -->
+            <object data="{{ training_module.file.url }}" type="application/pdf" width="100%" height="600px">
+                <p>It appears you don't have a PDF plugin for this browser.
+                   <a href="{{ training_module.file.url }}">Click here to download and view the PDF file.</a></p>
+            </object>
+        {% elif training_module.file.name|slice:'-5:' == '.doc' or training_module.file.name|slice:'-5:' == '.docx' %}
+            <!-- DOC or DOCX file -->
+            <iframe src="https://docs.google.com/viewer?url={{ training_module.file.url }}&embedded=true" width="100%" height="600px"></iframe>
+        {% elif training_module.file.name|slice:'-5:' == '.ppt' or training_module.file.name|slice:'-5:' == '.pptx' %}
+            <!-- PPT or PPTX file -->
+            <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ training_module.file.url }}" width="100%" height="600px"></iframe>
+        {% else %}
+            <p>This file type is not supported for preview. <a href="{{ training_module.file.url }}">Click here to view and download the file.</a></p>
+        {% endif %}
+    </div>
+
+    <!-- Hidden inputs to store module ID and trainee ID -->
+    <input type="hidden" id="training_module_id" value="{{ training_module.id }}">
+    <input type="hidden" id="trainee_id" value="{{ user.id }}">
+    
+    <!-- Button to mark module as completed -->
+    <button id="submit-button" type="button">Mark Module Complete</button>
+    
+    <div id="message" style="display:none;"></div>
+</body>
+</html>
+{% endblock %}

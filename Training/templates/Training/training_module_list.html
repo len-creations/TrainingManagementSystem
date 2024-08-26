@@ -1,0 +1,31 @@
+{% extends 'Training/layout.html' %}
+{% block body %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Training Modules</title>
+</head>
+<body>
+    <h1>Training Modules</h1>
+    
+    <!-- Module Actions Section -->
+    <div class="module-actions">
+        
+        {% if user.profile.is_manager %}
+            <a href="{% url 'training_module_create' %}">Create New Training Module</a> 
+            <a href="{% url 'show_all'  %}">Delete Training Module</a>
+        {% endif %}
+    </div>
+    
+    <!-- Module List Section -->
+    <ul class="module-list">
+        {% for module in training_modules %}
+            <li>
+                <a href="{% url 'training_module_detail' module.pk %}">{{ module.title }}</a>
+            
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+{% endblock %}

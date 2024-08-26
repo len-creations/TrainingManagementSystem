@@ -1,0 +1,13 @@
+{% extends 'Training/layout.html' %}
+{% load static %}
+{% block body %}
+<h1>Trainee Progress</h1>
+<form id="trainee-progress-form" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" id="training_module_id" name="training_module_id" value="{{ training_module.id }}">
+    <input type="hidden" id="trainee_id" name="trainee_id" value="{{trainee.id }}">
+    <button id="submit-button" type="button">Mark Module Complete</button>
+</form>
+<div id="message" style="display:none;"></div>
+{% endblock %}

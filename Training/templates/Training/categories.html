@@ -1,0 +1,12 @@
+{% extends "Training/layout.html" %}
+
+{% block body %}
+<h1>Categories</h1>
+<div class="category-action">
+    <ul class="category-list">
+        {% for category in categories %}
+            <li><a href="{% url 'category_detail' category=category %}">{{ category }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

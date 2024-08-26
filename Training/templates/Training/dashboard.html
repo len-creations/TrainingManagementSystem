@@ -1,0 +1,146 @@
+{% extends "Training/layout.html" %}
+{% block body %}
+
+    <div class="dashboard-container">
+        <h1>Dashboard</h1>
+        
+        <form method="get">
+            <label for="start_date">Start Date:</label>
+            {{ form.start_date }}
+            <label for="end_date">End Date:</label>
+            {{ form.end_date }}
+            <button type="submit">Filter</button>
+        </form>
+        <!-- Top right section -->
+        <section class="top-right">
+            <h2>Team</h2>
+            <table class="team-data-table">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Planned</th>
+                        <th>Actual</th>
+                        <th>Exams</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in team_data %}
+                    <tr>
+                        <td>{{ team.team }}</td>
+                        <td>{{ team.planned_trainings }}</td>
+                        <td>{{ team.completed_trainings }}</td>
+                        <td>{{ team.exams_count }}</td>
+                    </tr>
+                    {% empty %}
+            <tr>
+                <td colspan="4">No data available</td>
+            </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Yearly to Date -->
+        <section class="yearly-to-date">
+            <h2>Yearly To Date</h2>
+    <table class="yearly-stats-table">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Planned Trainings</th>
+                <th>Actual Trainings</th>
+                <th>Exams Done</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for year in yearly_stats %}
+            <tr>
+                <td>{{ year.date__year }}</td>
+                <td>{{ year.planned_trainings }}</td>
+                <td>{{ year.actual_trainings }}</td>
+                <td>{{ year.exams_done }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No data available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        </section>
+
+        <!-- Facilities section -->
+        <section class="facilities">
+            <h2>Facility</h2>
+            <ul class="facilities-list">
+                {% for facility in facilities %}
+                <li>{{ facility.facility }} - Planned Trainings: {{ facility.planned_trainings }}, Completed Trainings: {{ facility.completed_trainings }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% load custom_filters %}
+        <!-- Bar Graph (Top Left) -->
+        <section class="bar-graph">
+            <h2>Trainings per Team</h2>
+            <canvas id="trainingsPerTeam"></canvas>
+        </section>
+
+        <!-- Previous Months Data -->
+        <section class="previous-months">
+            <h2>Previous Months</h2>
+            <table class="previous-months-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Planned Trainings</th>
+                        <th>Actual Trainings</th>
+                        <th>Exams Done</th>
+                    </tr>
+                </thead>
+                    <tbody>
+                        {% for month in previous_months %}
+                        <tr>
+                            <td>{{ month.date__month }}</td>
+                            <td>{{ month.planned_trainings }}</td>
+                            <td>{{ month.actual_trainings }}</td>
+                            <td>{{ month.exams_done }}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script type="application/json" id="trainingsData">
+        {
+            "labels": [
+                {% for team in team_labels %}
+                    "{{ team.team }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            "colors": [
+                {% for color in colors %}
+                    "{{ color }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            "datasets": [
+                {
+                    "label": "Planned Trainings",
+                    "data": [
+                        {% for count in planned_data %}
+                            {{ count|default:0 }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ]
+                },
+                {
+                    "label": "Completed Trainings",
+                    "data": [
+                        {% for count in completed_data %}
+                            {{ count|default:0 }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ]
+                }
+            ]
+        }
+    </script>
+{% endblock %}

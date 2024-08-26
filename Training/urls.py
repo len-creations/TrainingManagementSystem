@@ -1,0 +1,50 @@
+from django.urls import path
+from django.conf.urls import handler404
+from Training import views
+from django.conf import settings
+from django.contrib.auth import views as auth_views
+from django.conf.urls.static import static
+# from .views import TraineeProgressView
+
+urlpatterns = [
+    path("",views.index,name="index"),
+    path('', views.search, name='search'),
+    path('search/', views.search, name='search'),
+    path("login",views.login_view, name="login"),
+    path("Register",views.register,name="register"),
+    path("logout",views.logout_view, name="logout"),
+     path('create_profile/', views.create_profile, name='create_profile'),
+    path('update_profile/', views.update_profile, name='update_profile'),
+    path("success",views.success_page, name="success_page"),
+    path("Profile_pic",views.profile_Pic,name='profile_Pic'),
+    #training resources urls
+    path('training-modules/create/', views.training_module_create, name='training_module_create'),
+    path('training_module/<int:pk>/delete/', views.training_module_delete, name='training_module_delete'),
+    path('show_all/', views.show_all, name='show_all'),
+    path('training-modules/', views.training_module_list, name='training_module_list'),
+    path('training-modules/<int:pk>/', views.training_module_detail, name='training_module_detail'),
+    path('categories/',views.category_list, name='category_list'),
+    path('category/<str:category>/', views.category_detail, name='category_detail'),
+    path('update-module-status/',views.update_module_status, name='update_module_status'),
+    path('get-module-status/',views.get_module_status, name='get_module_status'),
+    path('trainee_progress_summary/', views.trainee_progress_summary, name='trainee_progress_summary'),
+    path('trainee-summary/<int:pk>/',views.trainee_summary,name="trainee-summary"),
+    path('upload/',views.upload_document,name='upload_document'),
+    path('documents/',views.document_list,name='document_list'),
+    path('attendance',views.attendance, name='attendance'),
+    path('report-filter/',views.report_filter_view, name='report_filter_view'),
+    path('generate-report/', views.generate_report, name='generate_report'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('update_planned_trainings/', views.update_planned_trainings, name='update_planned_trainings'),
+    path('exam/create/', views.update_exam, name='update-exam'),
+
+    path('send-email/', views.send_email, name='send_email'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
+
+
+]   
+#custom handler for 404 errors
+handler404 = 'Training.views.custom_404_view'
