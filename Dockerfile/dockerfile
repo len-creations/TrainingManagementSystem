@@ -2,15 +2,17 @@
 FROM python:3.9-slim
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/TrainingManagmentSystem
 
 # Copy requirements.txt and install dependencies
-COPY requirements.txt ./
+COPY requirements.txt ./TrainingManagmentSystem
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . .
+COPY ./TrainingManagmentSystem 
 
+# Expose port 8080
+EXPOSE 8080
 # Expose the port the app runs on
 EXPOSE 8000
 
@@ -18,4 +20,4 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1
 
 # Run Django migrations and start the application
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c","gunicorn", "--bind", "TrainingManagmentSystem.wsgi.application",":8080","python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
