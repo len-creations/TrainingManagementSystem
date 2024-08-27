@@ -7,7 +7,7 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages  
 from.forms import profileupdateform,UserProfileForm,TrainingModuleForm,TraineeProgressFilterForm,TrainingDocumentsForm,ReportFilterForm,TraineeProgressForm,PlannedTrainingForm,DateFilterForm,ExamForm
-from PyPDF2 import PdfReader
+# from PyPDF2 import PdfReader
 import os
 import random
 from django.db import models
