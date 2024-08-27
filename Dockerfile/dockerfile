@@ -5,28 +5,20 @@ FROM python:3.9-slim
 WORKDIR /usr/src/TrainingManagmentSystem
 
 # Copy requirements.txt and install dependencies
-<<<<<<< HEAD
 COPY requirements.txt ./TrainingManagmentSystem
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
 COPY ./TrainingManagmentSystem 
 
-# Expose port 8080
-EXPOSE 8080
-# Expose the port the app runs on
-EXPOSE 8000
-
-=======
-COPY ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY /app
->>>>>>> f4d1057 (adding an environment again)
 # Set environment variables
 ENV PORT 8080
 
 CMD guincorn -- bind :$PORT --TrainingManagementSystem.wsgi:application
-# Run Django migrations and start the application
-CMD ["sh", "-c","gunicorn", "--bind", "TrainingManagmentSystem.wsgi.application",":8080","python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+
+# # Expose port 8080
+# EXPOSE 8080
+# # Expose the port the app runs on
+# EXPOSE 8000
+# # Run Django migrations and start the application
+# CMD ["sh", "-c","gunicorn", "--bind", "TrainingManagmentSystem.wsgi.application",":8080","python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
