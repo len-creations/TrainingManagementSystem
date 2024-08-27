@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,7 +50,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "TrainingManagmentSystem.urls"
+ROOT_URLCONF = "TrainingManagementSystem.urls"
 
 TEMPLATES = [
     {
@@ -69,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "TrainingManagmentSystem.wsgi.application"
+WSGI_APPLICATION = "TrainingManagementSystem.wsgi.application"
 
 
 # Database
@@ -133,7 +132,7 @@ EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email provider's SMTP server
 EMAIL_PORT = 587  # Use 465 for SSL or 587 for TLS
 EMAIL_USE_TLS = True  # Set to True for TLS, False for SSL
 EMAIL_HOST_USER = 'lensonkiarie@gmail.com'
-EMAIL_HOST_PASSWORD = 'kgnp zfsy vcks rslb'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'fallback_EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
