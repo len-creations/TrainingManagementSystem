@@ -1,0 +1,392 @@
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+    background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/confectionary.png);
+    font-size: 1rem; 
+}
+
+/* Header styles */
+.header {
+    color: #333; 
+    background-color: rgba(227, 222, 222, 0.808);
+    margin-top: 0; 
+    padding: 0.5rem;
+    display: flex;
+    align-items: center; /* Center items horizontally */
+}
+
+/* Profile box styles */
+.profile-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    margin-right: 0; /* Add space below profile box */
+}
+
+/* Profile info styles */
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-info img {
+    width: 9.375rem; /* 150px in rem */
+    height: 9.375rem; /* 150px in rem */
+    border-radius: 50%;
+    margin-bottom: 0.625rem;  /*Space between image and text */
+}
+
+.profile-details {
+    text-align: left; /* Align text to the left */
+}
+
+.profile-details p {
+    margin: 0;
+    font-weight: bold; /* Make 'signed in as' text bold */
+}
+
+/* Navigation link styles */
+.navlink, .nav {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center; /* Center nav links horizontally */
+    list-style-type: none;
+    padding: 0;
+}
+
+.navlink li, .nav li {
+    margin-left: 0.625rem;
+    border-radius: 0.9375rem; 
+    background-color: #f0f0f0;
+}
+
+.navlink a, .nav a {
+    text-decoration: none;
+    color: #111211;
+    padding: 0.3125rem 0.625rem;
+    border-radius: 0.9375rem;  
+}
+
+.navlink li a:hover, .nav li a:hover {
+    background-color: #a6baa7;
+    text-decoration: underline;
+}
+
+/* Footer styles */
+.footer {
+    background-color: #f0f0f0; 
+    padding: 0.625rem 0; 
+    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    justify-content: center; /* Center items horizontally */
+}
+
+.footer-content img {
+    max-width: 37.5rem;  /* Adjust max-width of the image */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 0.625rem; /* Space between image and text */
+}
+
+.footer-content p {
+    margin: 0; 
+    font-size: 0.875rem;
+}
+
+/* Input and textarea styles */
+input[readonly], textarea[readonly] {
+    background-color: #909192; 
+    pointer-events: none; 
+}
+
+/* Module list styles */
+.module-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.module-list li {
+    margin-bottom: 0.625rem;
+    background-color: #eee6e6; /* White background */
+    border: 1px solid #ddd;
+    border-radius: 0.3125rem; 
+    padding: 0.625rem;
+    text-align: center; /* Center text */
+}
+
+.module-list li a {
+    text-decoration: none;
+    color: #070707;
+}
+
+.module-list li a:hover, .category-list li a:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* Category list styles */
+.category-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.category-list li {
+    margin-bottom: 10px;
+    background-color: #fff; /* White background */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center; /* Center text */
+}
+
+.category-list li a {
+    text-decoration: none;
+    color: #0d0d0e;
+}
+
+.category-list li a:hover {
+    color: #007bff;
+}
+
+/* Module and category action buttons */
+.module-actions, .category-actions {
+    margin-top: 20px;
+}
+
+.module-actions a, .category-actions a {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 5px;
+}
+
+.module-actions a:hover, .category-actions a:hover {
+    background-color: #d0f0c7;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+td {
+    color: #6c6d6f; /* Text color */
+    display: table-cell;
+    font-variant-numeric: tabular-nums;
+    padding: 4px 4px 3px; /* Custom padding */
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* Search form styles */
+.search-form {
+    margin-bottom: 20px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-box {
+        flex-direction: column;
+    }
+
+    .profile-info img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .navlink, .nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navlink li, .nav li {
+        margin: 5px 0;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-content img {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-info img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .module-list li, .category-list li {
+        padding: 5px;
+    }
+}
+
+.header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.Attendance {
+    width: 100%;
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+.signature {
+    height: 50px;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Style the dropdown button */
+.dropbtn {
+    background-color: #e0e0e0;
+    color: rgb(10, 10, 10);
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+    margin: 0; /* Adjusted margin for better alignment */
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+    right: 0; /* Align dropdown to the right of the button */
+    top: 100%; /* Position it directly below the button */
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    padding: .64em 1em;
+    text-decoration: none;
+    display: block;
+    color: #0d0c0c;
+    background: #c3cacc;
+    border-radius: 3px;
+    font-family: 'SkyTextReg', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1;
+    margin: 0.5em 0;
+}
+
+/* Change background on hover */
+.dropdown-content a:hover {
+    background-color: #76b588;
+    text-decoration: underline;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Optional: Adjust dropdown on smaller screens */
+@media (max-width: 768px) {
+    .dropdown-content {
+        min-width: 100%; /* Make the dropdown full-width on smaller screens */
+    }
+
+    .dropdown-content a {
+        padding: 0.5em; /* Adjust padding for better fit on small screens */
+    }
+}
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 100px; /* Centering the search bar vertically */
+}
+
+/* Style for the search bar */
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+.results {
+    position: absolute;
+    top: 100%; /* Position below the search bar */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none; /* Remove the top border for a seamless look */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 10px 10px; /* Round the bottom corners */
+    max-height: 200px; /* Limit the height */
+    overflow-y: auto; /* Add scroll if the results exceed the max height */
+}
+
+/* Style for each result item */
+.result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    text-align: left;
+}
+
+/* Hover effect for result items */
+.result-item:hover {
+    background-color: #bfe0a4;
+}
+
+/* Remove the border for the last item */
+.result-item:last-child {
+    border-bottom: none;
+}
+.result-item a:hover {
+    background-color: #1ac74b;
+    text-decoration: underline;
+}

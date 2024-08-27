@@ -1,6 +1,15 @@
 # Use an official Python runtime as a parent image
 FROM python:3.9-slim
-
+# Install WeasyPrint dependencies
+RUN apt-get update && apt-get install -y \
+    libpango1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libcairo2 \
+    libffi-dev \
+    libssl-dev \
+    libjpeg62-turbo-dev \
+    zlib1g-dev \
+    && apt-get clean
 # Set the working directory in the container
 WORKDIR /app
 
@@ -13,4 +22,4 @@ COPY . /app
 # Set environment variables
 EXPOSE 8080
 
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "TrainingManagementSystem.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "TrainingManagementSystem.wsgi:application"]
