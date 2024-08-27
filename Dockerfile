@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 # Set the working directory in the container
 WORKDIR /app
+# Collect static files
+RUN python manage.py collectstatic --noinput
 
 # Copy requirements.txt and install dependencies
 COPY requirements.txt .
