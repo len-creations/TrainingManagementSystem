@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,13 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-8055i61hdh*sz5td%&nj%j6n#j)mp9&--py_f*hg8%0o-!)5z+"
+# SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*','localhost','127.0.0.1']
 
 # Application definition
 
@@ -137,7 +138,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 # AUTH_USER_MODEL = 'Training.User'
 
 # Default primary key field type

@@ -1,0 +1,22 @@
+# Environment variables
+.env
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Django specific files
+db.sqlite3
+*.log
+staticfiles/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Node.js dependencies
+node_modules/
+
+# IDE settings
+.vscode/
+.idea/
