@@ -2,14 +2,17 @@
 FROM python:3.9-slim
 
 # Set the working directory in the container
-WORKDIR /usr/src/TrainingManagmentSystem
-
+WORKDIR /app
 # Copy requirements.txt and install dependencies
-COPY requirements.txt ./TrainingManagmentSystem
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+ARG SECRET_KEY
+ARG EMAIL_HOST_PASSWORD
 
+ENV SECRET_KEY=$SECRET_KEY
+ENV EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
 # Copy the rest of the application code
-COPY ./TrainingManagmentSystem 
+COPY ./app
 
 # Set environment variables
 ENV PORT 8080
