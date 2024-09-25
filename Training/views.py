@@ -32,8 +32,8 @@ from io import BytesIO
 import openpyxl
 
 # Create your views here.
-# def index(request):
-#     return render(request,'Training/layout.html')
+def index(request):
+    return render(request,'Training/layout.html')
 def search(request):
     query = request.GET.get('q')
     results = []

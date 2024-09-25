@@ -25,9 +25,12 @@ SECRET_KEY = "django-insecure-8055i61hdh*sz5td%&nj%j6n#j)mp9&--py_f*hg8%0o-!)5z+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['8000-cs-429897859705-default.cs-europe-west4-bhnf.cloudshell.dev', 'localhost', '127.0.0.1']
 
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://8000-cs-429897859705-default.cs-europe-west4-bhnf.cloudshell.dev',
+    'http://localhost:8000',
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -137,7 +140,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
 
-ALLOWED_HOSTS = ['special-space-robot-6977vq6wjg7h4ppp-8000.app.github.dev/', 'localhost', '127.0.0.1']
+
 # AUTH_USER_MODEL = 'Training.User'
 
 # Default primary key field type

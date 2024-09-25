@@ -1,0 +1,10 @@
+{
+  "SECRET_KEY": "your-secret-key-here",
+    "CSRF_TRUSTED_ORIGINS": [
+      "https://8000-cs-429897859705-default.cs-europe-west4-pear.cloudshell.dev",
+      "https://trainingmanagementsystem-gnuq7pdm4q-ww.a.run.app",
+      "https://trainingmanagementsystem-777294210504.me-central1.run."
+
+    ]
+  }
+  

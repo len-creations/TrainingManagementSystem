@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 # from .views import TraineeProgressView
 
 urlpatterns = [
-    # path("",views.index,name="index"),
+    path("",views.index,name="index"),
     path('', views.search, name='search'),
     path('search/', views.search, name='search'),
     path("login",views.login_view, name="login"),
