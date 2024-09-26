@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+
+with open('path/to/config.json') as config_file:
+    config = json.load(config_file)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-8055i61hdh*sz5td%&nj%j6n#j)mp9&--py_f*hg8%0o-!)5z+"
+SECRET_KEY = config.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,10 +31,11 @@ DEBUG = True
 ALLOWED_HOSTS = ['8000-cs-429897859705-default.cs-europe-west4-fycr.cloudshell.dev', 
 'localhost', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = [
-  'https://8000-cs-429897859705-default.cs-europe-west4-fycr.cloudshell.dev',
-    'http://localhost:8000',
-]
+CSRF_TRUSTED_ORIGINS = config.get("CSRF_TRUSTED_ORIGINS")
+# CSRF_TRUSTED_ORIGINS = [
+#   'https://8000-cs-429897859705-default.cs-europe-west4-fycr.cloudshell.dev',
+#     'http://localhost:8000',
+# ]
 # Application definition
 
 INSTALLED_APPS = [
@@ -135,8 +139,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  
 EMAIL_PORT = 587  
 EMAIL_USE_TLS = True 
-EMAIL_HOST_USER = 'lensonkiarie@gmail.com'
-EMAIL_HOST_PASSWORD = 'kgnp zfsy vcks rslb'
+EMAIL_HOST_USER = config.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
