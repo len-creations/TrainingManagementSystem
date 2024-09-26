@@ -1,35 +1,46 @@
 document.addEventListener('DOMContentLoaded', function() {
     const submitButton = document.getElementById('submit-button');
-    const messageDiv = document.getElementById('message');
     const traineeId = document.getElementById('trainee_id').value;
     const trainingModuleId = document.getElementById('training_module_id').value;
 
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'alert';
+    messageDiv.style.display = 'none'; 
+    document.body.appendChild(messageDiv); 
+
+    messageDiv.textContent = '';
+
     // Check if trainee ID and training module ID are present
     if (!traineeId || !trainingModuleId) {
-        alert('Trainee ID or Training Module ID is missing.');
+        messageDiv.textContent = 'Kindly register as a trainee.';
+        messageDiv.className = 'alert alert-warning'; // Bootstrap warning alert
+        messageDiv.style.display = 'block'; // Show the message
         return;
     }
-
-    // Function to fetch the current status of the module
-    function fetchModuleStatus() {
-        fetch(`/get-module-status/?trainee_id=${traineeId}&training_module_id=${trainingModuleId}`)
+    
+    // Fetch the initial status when the page loads
+    function fetchTraineeStatus() {
+        fetch(`/get-trainee-status/?trainee_id=${traineeId}`) // Adjust the endpoint to match your backend
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Set button text based on completion status
-                    submitButton.textContent = data.progress === 100 ? 'Uncomplete Module' : 'Mark Module Complete';
+                    // Update button text based on some criteria (you can modify this logic)
+                    submitButton.textContent = 'Trainee Status Fetched'; // Adjust this as needed
+                    messageDiv.style.display = 'none'; // Hide the message
                 } else {
-                    console.error(data.message);
+                    messageDiv.textContent = 'Kindly register as a trainee.';
+                    messageDiv.className = 'alert alert-warning'; // Show the message
+                    messageDiv.style.display = 'block'; // Ensure the message is displayed
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while fetching module status.');
+                alert('An error occurred while fetching trainee status.');
             });
     }
 
     // Fetch the initial status when the page loads
-    fetchModuleStatus();
+    fetchTraineeStatus();
 
     submitButton.addEventListener('click', function() {
         const action = submitButton.textContent === 'Mark Module Complete' ? 'complete' : 'uncomplete';
