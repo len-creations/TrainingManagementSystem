@@ -142,7 +142,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # PASSWORD_RESET_TOKEN_GENERATOR = 'Training.tokens.token_generator'
 
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_BUCKET_NAME = 'training-system-bucket'
+GS_BUCKET_NAME = 'training-system-bucket2'
 # AUTH_USER_MODEL = 'Training.User'
 
 # Default primary key field type
