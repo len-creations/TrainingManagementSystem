@@ -32,8 +32,8 @@ from io import BytesIO
 import openpyxl
 
 # Create your views here.
-# def index(request):
-#     return render(request,'Training/layout.html')
+def index(request):
+    return render(request,'Training/layout.html')
 def search(request):
     query = request.GET.get('q')
     results = []
@@ -158,9 +158,8 @@ def create_profile(request):
     try:
         profile_instance = Profile.objects.get(user=user_instance)
         messages.info(request, 'Profile already exists. You can update it instead.')
-        return redirect('update_profile')  # Redirect to update profile page if it exists
+        return redirect('update_profile')
     except Profile.DoesNotExist:
-        # No profile exists, so proceed to create one
         if request.method == 'POST':
             form = profileupdateform(request.POST, request.FILES, user_instance=user_instance)
             if form.is_valid():
@@ -168,7 +167,7 @@ def create_profile(request):
                 profile.user = user_instance
                 profile.save()
                 messages.success(request, 'Profile created successfully!')
-                return redirect('success_page')  # Redirect to a success page or any other page
+                return redirect('success_page') 
         else:
             form = profileupdateform(user_instance=user_instance)
 
@@ -181,7 +180,7 @@ def update_profile(request):
         profile_instance = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         messages.error(request, 'Profile not found. Please create a profile first.')
-        return redirect('create_profile')  # Redirect to profile creation page or similar
+        return redirect('create_profile')
 
     if request.method == 'POST':
         form = profileupdateform(request.POST, request.FILES, instance=profile_instance)
@@ -202,7 +201,7 @@ def profile_Pic(request):
         profile_instance = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         messages.error(request, 'Profile not found. Please create a profile first.')
-        return redirect('create_profile')  # Redirect to profile creation page or similar
+        return redirect('create_profile') 
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=profile_instance)
@@ -289,8 +288,7 @@ def update_module_status(request):
             trainee_id = int(request.POST.get('trainee_id'))
             training_module_id = int(request.POST.get('training_module_id'))
             completed_modules = int(request.POST.get('completed_modules', 0))
-            completed_exams = int(request.POST.get('completed_exams', 0))
-            action = request.POST.get('action')  # 'complete' or 'uncomplete'
+            action = request.POST.get('action')
 
             trainee = User.objects.get(id=trainee_id)
             training_module = TrainingModule.objects.get(id=training_module_id)
@@ -313,10 +311,10 @@ def update_module_status(request):
                     return JsonResponse({'status': 'info', 'message': 'Module already marked as complete.'})
 
             elif action == 'uncomplete':
-                if progress_record.progress == 100:  # Only decrement if already completed
+                if progress_record.progress == 100:
                     progress_record.completed_modules -= completed_modules
                     # progress_record.completed_exams -= completed_exams
-                    progress_record.progress = 0  # Mark as incomplete
+                    progress_record.progress = 0 
                     progress_record.save()
                     return JsonResponse({'status': 'success', 'message': 'Module marked as incomplete.'})
                 else:
@@ -331,6 +329,7 @@ def update_module_status(request):
             return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}\n{traceback.format_exc()}'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+    
 @require_GET
 def get_module_status(request):
     try:

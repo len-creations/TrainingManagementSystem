@@ -3,11 +3,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageDiv = document.getElementById('message');
     const traineeId = document.getElementById('trainee_id').value;
     const trainingModuleId = document.getElementById('training_module_id').value;
+    
+    function handleValidation() {
+        // Clear any previous messages
+        messageDiv.innerHTML = '';
 
-    // Check if trainee ID and training module ID are present
-    if (!traineeId || !trainingModuleId) {
-        alert('Trainee ID or Training Module ID is missing.');
-        return;
+        // Check if trainee ID or training module ID is null or empty
+        if (!traineeId || !trainingModuleId) {
+            const alertDiv = document.createElement('div');
+            alertDiv.textContent = 'Please register as Trainee by adding profile pic'; 
+            alertDiv.classList.add('alert-message');
+             messageDiv.appendChild(alertDiv);
+           messageDiv.style.display = 'block';
+            // Return false to indicate validation failed
+            return false;
+        }
+
+        // Validation passed
+        return true;
+    }
+    if (handleValidation()) {
+        console.log('');
     }
 
     // Function to fetch the current status of the module
@@ -38,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('trainee_id', traineeId);
         formData.append('training_module_id', trainingModuleId);
         formData.append('completed_modules', '1'); // Example value
-        formData.append('action', action); // Add action to the request
+        formData.append('action', action); 
 
         fetch('/update-module-status/', {
             method: 'POST',

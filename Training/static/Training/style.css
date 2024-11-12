@@ -59,3 +59,16 @@ section {
         font-size: 0.875rem;
     }
 }
+.alert-message {
+    background-color: red;       
+    color: white;              
+    padding: 10px;              
+    border-radius: 5px;         
+    margin-top: 10px;           
+    font-weight: bold;        
+    max-width: 100%;             
+    text-align: center;      
+}
+.alert-message.fade-out {
+    animation: fadeOut 3s forwards;
+}

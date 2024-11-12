@@ -9,7 +9,7 @@ class profileupdateform(forms.ModelForm):
         fields = ['name', 'team', 'facility', 'staffnumber', 'designation', 'email', 'age']
 
     def __init__(self, *args, **kwargs):
-        user_instance = kwargs.pop('user_instance', None)  # Pop user_instance from kwargs
+        user_instance = kwargs.pop('user_instance', None)  
         super().__init__(*args, **kwargs)
 
         readonly_fields = [ 'email']
