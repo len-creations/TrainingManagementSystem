@@ -45,6 +45,8 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
 
-]   
+] 
+if settings.DEBUG:  # Only during development
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])  
 #custom handler for 404 errors
 handler404 = 'Training.views.custom_404_view'
